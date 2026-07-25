@@ -7,7 +7,7 @@ export type FSNode = FolderNode | FileNode
 export const folder = (children: Record<string, FSNode> = {}): FolderNode => ({ type: 'folder', children })
 export const file = (content: string): FileNode => ({ type: 'file', content })
 
-function initialRoot(): FolderNode {
+export function initialRoot(): FolderNode {
   return folder({
     'My Documents': folder({
       'tax_stuff_2019': folder({}),
@@ -73,6 +73,7 @@ interface GameState {
   stats: { adsClosed: number; errorsSeen: number; accidentalSubs: number }
   boot: () => void
   mkdir: (path: string[], name: string) => boolean
+  mkdirPath: (path: string[], input: string) => string[] | null
   writeFile: (path: string[], name: string, content: string) => boolean
   deleteNode: (path: string[], name: string) => boolean
   buySub: (name: string, price: number) => void
@@ -109,6 +110,30 @@ export const useGame = create<GameState>()((set, get) => ({
     if (!next) return false
     set({ root: next })
     return true
+  },
+
+  /**
+   * Path-aware folder creation: "My Documents\win_files" creates/reuses each
+   * segment (case-insensitively) relative to `path`. Returns the canonical
+   * path of the deepest folder, or null if blocked by a file.
+   */
+  mkdirPath: (path, input) => {
+    const segs = input.split(/[\\/]/).map(s => s.trim()).filter(Boolean)
+    if (segs.length === 0) return null
+    let current = [...path]
+    for (const seg of segs) {
+      const node = getNode(get().root, current)
+      if (!node || node.type !== 'folder') return null
+      const existing = resolveChild(node, seg)
+      if (existing) {
+        if (node.children[existing].type !== 'folder') return null
+        current = [...current, existing]
+      } else {
+        if (!get().mkdir(current, seg)) return null
+        current = [...current, seg]
+      }
+    }
+    return current
   },
 
   writeFile: (path, name, content) => {

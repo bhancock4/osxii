@@ -16,6 +16,7 @@ function SaveDialog({
   const root = useGame(s => s.root)
   const [path, setPath] = useState<string[]>([])
   const [name, setName] = useState(initialName)
+  const [newFolder, setNewFolder] = useState('')
   const [dodged, setDodged] = useState(false)
   const [dodgeOffset, setDodgeOffset] = useState({ x: 0, y: 0 })
 
@@ -49,6 +50,25 @@ function SaveDialog({
             <li key={f} onDoubleClick={() => setPath(p => [...p, f])}>📁 {f}</li>
           ))}
         </ul>
+        <div className="save-row">
+          <input
+            placeholder="new folder name"
+            value={newFolder}
+            onChange={e => setNewFolder(e.target.value)}
+          />
+          <button
+            disabled={!newFolder.trim()}
+            onClick={() => {
+              const created = useGame.getState().mkdirPath(path, newFolder.trim())
+              if (created) {
+                setPath(created)
+                setNewFolder('')
+              }
+            }}
+          >
+            New Folder
+          </button>
+        </div>
         <div className="save-row">
           <label>File name:</label>
           <input value={name} onChange={e => setName(e.target.value)} />

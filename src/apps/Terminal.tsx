@@ -107,8 +107,8 @@ export default function Terminal({ winId }: { winId: number }) {
         if (!rest) return ['Usage: mkdir <name>']
         const name = stripQuotes(rest)
         const f = currentFolder()
-        if (resolveChild(f, name)) return [`A subdirectory or file ${name} already exists.`]
-        g.mkdir(cwd, name)
+        if (!/[\\/]/.test(name) && resolveChild(f, name)) return [`A subdirectory or file ${name} already exists.`]
+        if (!g.mkdirPath(cwd, name)) return ['Cannot create that path. It resisted.']
         const out: string[] = []
         if (chance(0.2)) out.push(`Did you mean: mk${name.slice(0, 3)}rr? (It worked anyway.)`)
         return out

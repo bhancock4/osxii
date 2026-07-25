@@ -47,6 +47,10 @@ must create the win_files folder yourself, inside My Documents.
   8. Set the filename to: win.txt
   9. Click Save.
 
+Shortcut: the Save As dialog also has a "New Folder" button, so
+you can create win_files right there. Typing a full path like
+My Documents\win_files into either folder box also works.
+
 ----------------------------------------------------------------
   METHOD 2: THE COMMAND PROMPT (FOR THE BRAVE)
 ----------------------------------------------------------------

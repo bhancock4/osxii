@@ -43,8 +43,8 @@ export default function Explorer({ winId }: { winId: number }) {
     }
     setTimeout(() => {
       const g = useGame.getState()
-      g.mkdir(targetPath, name)
-      if (chance(0.15)) {
+      g.mkdirPath(targetPath, name)
+      if (chance(0.15) && !/[\\/]/.test(name)) {
         g.mkdir(targetPath, `${name} (2)`)
         usePopups.getState().toast(`Created "${name}" twice, to be safe.`)
       }
