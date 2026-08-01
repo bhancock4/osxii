@@ -82,7 +82,7 @@ export const ADS: AdSpec[] = [
     id: 'pc-horoscope',
     productName: 'MachineStars™ PC Horoscopes',
     headline: 'Mercury Is In Retrograde. So Is Your Motherboard.',
-    body: 'Your computer was born under the sign of Compaq, meaning today is an excellent day for blue screens and a terrible day for saving documents. Subscribe for daily horoscopes tailored to your exact hardware\'s emotional state.',
+    body: 'Your computer was born under the sign of the Zenithron 486, meaning today is an excellent day for blue screens and a terrible day for saving documents. Subscribe for daily horoscopes tailored to your exact hardware\'s emotional state.',
     price: '$14.99/mo for cosmic clarity',
     monthlyCost: 14.99,
     ctaLabel: 'READ MY FUTURE',
