@@ -101,11 +101,14 @@ export default function Notepad({ winId, props }: { winId: number; props?: Recor
   const setTitle = useWins(s => s.setTitle)
   const toast = usePopups(s => s.toast)
   const spawnError = usePopups(s => s.spawnError)
+  const degraded = usePopups(s => s.degraded)
   const [content, setContent] = useState('')
   const [showSave, setShowSave] = useState(false)
   const [dialUpTarget, setDialUpTarget] = useState<{ path: string[]; name: string } | null>(null)
   const [activeTab, setActiveTab] = useState<string | null>(null)
   const [openSub, setOpenSub] = useState<string | null>(null)
+  const [hamburgerOpen, setHamburgerOpen] = useState(false)
+  const [hackerTyping, setHackerTyping] = useState(false)
   const [glitching, setGlitching] = useState(false)
   const [fontSize, setFontSize] = useState(13)
   const [comicSans, setComicSans] = useState(false)
@@ -128,6 +131,24 @@ export default function Notepad({ winId, props }: { winId: number; props?: Recor
       }
     }
   }, [props, winId, setTitle])
+
+  // Remote Assistance™: the hacker types their taunt character by character
+  // while the textarea is locked. You can only watch.
+  const autoType = props?.autoType as string | undefined
+  useEffect(() => {
+    if (!autoType) return
+    setHackerTyping(true)
+    let i = 0
+    const id = setInterval(() => {
+      i++
+      setContent(autoType.slice(0, i))
+      if (i >= autoType.length) {
+        clearInterval(id)
+        setHackerTyping(false)
+      }
+    }, 48)
+    return () => clearInterval(id)
+  }, [autoType])
 
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     let next = e.target.value
@@ -281,20 +302,48 @@ export default function Notepad({ winId, props }: { winId: number; props?: Recor
   }
 
   const items = activeTab ? RIBBON[activeTab] : null
+  const tabNames = Object.keys(RIBBON)
+  // Post-upgrade "streamlining": tabs collapse into an unnecessary hamburger,
+  // in an order chosen by the upgrade. Stable per render pass — deterministic
+  // shuffle keyed off nothing meaningful, like most UI redesigns.
+  const shuffledTabs = degraded
+    ? [...tabNames].sort((a, b) => ((a.length * 7 + a.charCodeAt(0)) % 11) - ((b.length * 7 + b.charCodeAt(0)) % 11))
+    : tabNames
 
   return (
     <div className="notepad">
-      <div className="ribbon-tabs">
-        {Object.keys(RIBBON).map(tab => (
-          <button
-            key={tab}
-            className={'menu-btn' + (activeTab === tab ? ' ribbon-tab-active' : '')}
-            onClick={() => { setActiveTab(t => (t === tab ? null : tab)); setOpenSub(null) }}
-          >
-            {tab}
+      {degraded ? (
+        <div className="ribbon-tabs">
+          <button className="menu-btn hamburger-btn" onClick={() => { setHamburgerOpen(o => !o); setOpenSub(null) }}>
+            ☰ Menu
           </button>
-        ))}
-      </div>
+          {activeTab && <span className="hamburger-crumb">▸ {activeTab}</span>}
+          {hamburgerOpen && (
+            <div className="menu-dropdown hamburger-menu">
+              {shuffledTabs.map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => { setActiveTab(tab); setHamburgerOpen(false); setOpenSub(null) }}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="ribbon-tabs">
+          {tabNames.map(tab => (
+            <button
+              key={tab}
+              className={'menu-btn' + (activeTab === tab ? ' ribbon-tab-active' : '')}
+              onClick={() => { setActiveTab(t => (t === tab ? null : tab)); setOpenSub(null) }}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+      )}
       {items && (
         <div className="ribbon-row">
           {items.map(item => (
@@ -330,7 +379,8 @@ export default function Notepad({ winId, props }: { winId: number; props?: Recor
         }}
         value={content}
         onChange={onChange}
-        onClick={closeMenus}
+        onClick={() => { closeMenus(); setHamburgerOpen(false) }}
+        readOnly={hackerTyping}
         spellCheck={false}
         placeholder="Type here. What could go wrong?"
       />

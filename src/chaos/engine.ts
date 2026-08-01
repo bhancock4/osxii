@@ -30,7 +30,10 @@ function playing(): boolean {
 }
 
 function paused(): boolean {
-  return useGame.getState().locked || usePopups.getState().updateOverlay
+  const p = usePopups.getState()
+  // Consequences that steal control also stop the clock — losing to renewals
+  // you couldn't have prevented isn't funny, it's just unfair.
+  return useGame.getState().locked || p.updateOverlay || p.bsod || p.hung || p.hacked
 }
 
 function idleMs(): number {

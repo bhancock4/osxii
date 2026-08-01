@@ -21,6 +21,12 @@ interface PopupStore {
   updateOverlay: boolean
   /** Post-"upgrade" visual experience: garish colors + laggy cursor. */
   degraded: boolean
+  /** Consequence states — triggered by choosing the destructive option on a
+   * system prompt. See src/chaos/consequences.ts for the choreography. */
+  bsod: boolean
+  hung: boolean
+  flickering: boolean
+  hacked: boolean
   spawnAd: (adId?: string) => void
   spawnError: (error?: ErrorSpec) => void
   spawnConfirm: () => void
@@ -42,6 +48,10 @@ export const usePopups = create<PopupStore>()((set, get) => ({
   bindowsTip: null,
   updateOverlay: false,
   degraded: false,
+  bsod: false,
+  hung: false,
+  flickering: false,
+  hacked: false,
 
   spawnAd: adId => {
     const { popups } = get()
@@ -100,6 +110,7 @@ export const usePopups = create<PopupStore>()((set, get) => ({
       // The upgrade "succeeded": things immediately get worse.
       set({ degraded: true })
       get().toast('✅ Update complete! Enjoy the new OSXii Visual Experience™ and Enhanced Cursor Physics™.')
+      setTimeout(() => get().toast('🍔 Your menus have been streamlined into one convenient location.'), 2500)
       if (degradeTimer) clearTimeout(degradeTimer)
       degradeTimer = setTimeout(() => {
         set({ degraded: false })

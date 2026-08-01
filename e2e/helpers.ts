@@ -14,7 +14,9 @@ export async function armAutoClicker(page: Page): Promise<void> {
       const err = document.querySelector('.error-dialog')
       if (err) {
         if (err.textContent?.includes('Disk Manager')) w.__sawDiskFull = true
-        const btn = err.querySelector<HTMLButtonElement>('.error-buttons button, .confirm-buttons button')
+        // Confirms: ALWAYS take the safe answer — the destructive one now has
+        // real consequences (bsod, hacker takeover, ...) that would derail tests.
+        const btn = err.querySelector<HTMLButtonElement>('.confirm-buttons button[data-safe="true"], .error-buttons button')
         if (btn) { btn.click(); return }
       }
       for (const sel of ['.ad-close-tiny', '.ad-close-corner', '.ad-nothanks']) {

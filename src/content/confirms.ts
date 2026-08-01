@@ -1,3 +1,5 @@
+import type { ConsequenceKind } from '../chaos/consequences'
+
 export interface ConfirmSpec {
   title: string
   body: string
@@ -5,11 +7,14 @@ export interface ConfirmSpec {
   cancelLabel: string
   okToast: string
   cancelToast: string
+  /** What actually happens if you choose the destructive option. */
+  consequence: ConsequenceKind
 }
 
 /**
- * Catastrophic-sounding OK/Cancel prompts. Neither button ever does anything
- * harmful — the harm is emotional.
+ * Catastrophic-sounding OK/Cancel prompts. Cancel is always safe (a toast at
+ * most). OK — the clearly destructive choice — now has real consequences.
+ * Read before you click. The dialogs warned you. Sort of.
  */
 export const CONFIRMS: ConfirmSpec[] = [
   {
@@ -19,6 +24,7 @@ export const CONFIRMS: ConfirmSpec[] = [
     cancelLabel: 'Cancel',
     okToast: 'All files deleted. (Restored from backup. We back up everything. Everything.)',
     cancelToast: 'Deletion postponed to a surprise date of our choosing.',
+    consequence: 'bsod',
   },
   {
     title: 'OSXii Setup',
@@ -27,6 +33,7 @@ export const CONFIRMS: ConfirmSpec[] = [
     cancelLabel: 'Cancel',
     okToast: 'Reinstallation queued behind 4,000 pending updates.',
     cancelToast: 'Setup will ask again at a worse time.',
+    consequence: 'update',
   },
   {
     title: 'Power Manager',
@@ -35,6 +42,7 @@ export const CONFIRMS: ConfirmSpec[] = [
     cancelLabel: 'Not now',
     okToast: 'Restart deferred until you are mid-keystroke.',
     cancelToast: '"Not now" has been interpreted as "soon."',
+    consequence: 'hang',
   },
   {
     title: 'Registry Maintenance',
@@ -43,6 +51,7 @@ export const CONFIRMS: ConfirmSpec[] = [
     cancelLabel: 'Cancel',
     okToast: 'Registry keys detonated. The blast radius included your settings.',
     cancelToast: 'The keys remain, ticking softly.',
+    consequence: 'crash',
   },
   {
     title: 'Privacy Center',
@@ -51,6 +60,7 @@ export const CONFIRMS: ConfirmSpec[] = [
     cancelLabel: 'Cancel',
     okToast: 'Files shared. Your Trusted Partners say thanks.',
     cancelToast: 'Sharing declined. Files shared anyway, out of habit.',
+    consequence: 'hacker',
   },
   {
     title: 'OSXii Security',
@@ -59,6 +69,7 @@ export const CONFIRMS: ConfirmSpec[] = [
     cancelLabel: 'Spare it',
     okToast: 'Program terminated. It never saw it coming.',
     cancelToast: 'Program spared. It knows what you almost did.',
+    consequence: 'crash',
   },
   {
     title: 'Disk Utility',
@@ -67,6 +78,7 @@ export const CONFIRMS: ConfirmSpec[] = [
     cancelLabel: 'Cancel',
     okToast: 'Happiness defragmented into 512 contiguous blocks of contentment.',
     cancelToast: 'Drive C: remains happy, for now, in fragments.',
+    consequence: 'flicker',
   },
   {
     title: 'Sync Wizard',
@@ -75,6 +87,7 @@ export const CONFIRMS: ConfirmSpec[] = [
     cancelLabel: 'Cancel',
     okToast: 'Clipboard synced. It said something embarrassing. Everyone saw.',
     cancelToast: 'Sync cancelled. The billboard shows your name anyway.',
+    consequence: 'adstorm',
   },
   {
     title: 'Account Control',
@@ -83,5 +96,6 @@ export const CONFIRMS: ConfirmSpec[] = [
     cancelLabel: 'Cancel',
     okToast: 'Existence confirmed. Welcome to the mailing list.',
     cancelToast: 'Existence unconfirmed. Continuing to bill you regardless.',
+    consequence: 'adstorm',
   },
 ]

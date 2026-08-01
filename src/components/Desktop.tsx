@@ -10,6 +10,7 @@ import Bindows from './Bindows'
 import UpdateOverlay from './UpdateOverlay'
 import LockScreen from './LockScreen'
 import LagCursor from './LagCursor'
+import SystemOverlays from './SystemOverlays'
 
 const ICONS: { key: string; glyph: string; label: string; action: 'explorer' | 'notepad' | 'terminal' | 'readme' | 'recycle' }[] = [
   { key: 'computer', glyph: '🖥️', label: 'My Computer', action: 'explorer' },
@@ -24,6 +25,8 @@ export default function Desktop() {
   const open = useWins(s => s.open)
   const updateOverlay = usePopups(s => s.updateOverlay)
   const degraded = usePopups(s => s.degraded)
+  const flickering = usePopups(s => s.flickering)
+  const hung = usePopups(s => s.hung)
   const locked = useGame(s => s.locked)
   const [selected, setSelected] = useState<string | null>(null)
 
@@ -41,7 +44,10 @@ export default function Desktop() {
   }
 
   return (
-    <div className={'desktop' + (degraded ? ' degraded' : '')} onClick={() => setSelected(null)}>
+    <div
+      className={'desktop' + (degraded ? ' degraded' : '') + (flickering ? ' flickering' : '') + (hung ? ' hung' : '')}
+      onClick={() => setSelected(null)}
+    >
       <div className="icons">
         {ICONS.map(icon => (
           <div
@@ -67,6 +73,7 @@ export default function Desktop() {
       {updateOverlay && <UpdateOverlay />}
       <Taskbar />
       {degraded && <LagCursor />}
+      <SystemOverlays />
       {locked && <LockScreen />}
     </div>
   )

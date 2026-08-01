@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { usePopups, type Popup } from '../state/popups'
 import { useGame } from '../state/game'
+import { applyConsequence } from '../chaos/consequences'
 import type { AdSpec } from '../content/types'
 
 function AdPopup({ popup, ad, offset }: { popup: Popup; ad: AdSpec; offset: number }) {
@@ -74,15 +75,19 @@ function ConfirmPopup({ popup, offset }: { popup: Popup; offset: number }) {
   const toast = usePopups(s => s.toast)
   const promptSurvived = useGame(s => s.promptSurvived)
   const c = popup.confirm!
-  // Keep them on their toes: OK and Cancel swap sides per prompt.
+  // Keep them on their toes: OK and Cancel swap sides per prompt. The
+  // consequence follows the destructive ANSWER, not the button position.
   const swapped = popup.id % 2 === 1
-  const answer = (text: string) => {
+  const answer = (text: string, destructive: boolean) => {
     promptSurvived()
     closePopup(popup.id)
     toast(text)
+    if (destructive) applyConsequence(c.consequence)
   }
-  const okBtn = <button key="ok" onClick={() => answer(c.okToast)}>{c.okLabel}</button>
-  const cancelBtn = <button key="cancel" onClick={() => answer(c.cancelToast)}>{c.cancelLabel}</button>
+  const okBtn = <button key="ok" onClick={() => answer(c.okToast, true)}>{c.okLabel}</button>
+  // data-safe is invisible to players; the e2e auto-clicker uses it to avoid
+  // detonating consequences mid-test.
+  const cancelBtn = <button key="cancel" data-safe="true" onClick={() => answer(c.cancelToast, false)}>{c.cancelLabel}</button>
   return (
     <div className="popup" style={{ transform: `translate(-50%, -50%) translate(${offset * 34 - 40}px, ${offset * 34 + 30}px)` }}>
       <div className="window error-dialog">

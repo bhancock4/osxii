@@ -286,6 +286,8 @@ body { font-size: 12px; }
 .lock-card h2 { margin: 0 0 2px; font-weight: normal; }
 .lock-sub { margin: 0 0 16px; color: #bcd0f5; }
 .lock-card input { width: 200px; margin-right: 6px; }
+/* Visual masking without type="password" — keeps password managers away */
+.lock-pass { -webkit-text-security: disc; }
 .lock-msg { margin-top: 12px; min-height: 16px; color: #ffb3b3; }
 .lock-forgot {
   margin-top: 20px; background: none; border: none; box-shadow: none;
@@ -404,6 +406,47 @@ body { font-size: 12px; }
 .ultimate-screen .lb-table th, .ultimate-screen .lb-table td { border-color: #2f6b2f; }
 .ultimate-screen .lb-me { background: #123312; }
 .ultimate-screen .lb-title { color: #d8ffd8; }
+
+/* ---------- Consequences ---------- */
+.bsod-screen { background: #0a48b5; color: #fff; z-index: 48000; cursor: default; }
+.bsod-body { max-width: 620px; padding: 24px; text-align: left; }
+.bsod-body h1 { font-size: 84px; margin: 0 0 12px; }
+.bsod-body p { font-size: 15px; line-height: 1.5; }
+.bsod-pct { font-size: 22px; font-weight: bold; }
+.bsod-small { font-size: 12px; color: #bcd2f5; }
+.bsod-continue { font-weight: bold; animation: blink 1.2s steps(2) infinite; }
+
+.hang-blocker {
+  position: fixed; inset: 0; z-index: 47000;
+  cursor: wait;
+}
+.desktop.hung { filter: grayscale(0.45) contrast(0.95); }
+.desktop.hung .title-bar-text::after { content: ' (Not Responding)'; }
+
+.desktop.flickering { animation: sysflicker 0.28s steps(1) 8; }
+@keyframes sysflicker {
+  0% { filter: none; }
+  25% { filter: invert(1); }
+  50% { filter: none; }
+  75% { filter: invert(1) hue-rotate(120deg) saturate(2); }
+  100% { filter: none; }
+}
+
+.hacker-blocker { position: fixed; inset: 0; z-index: 46000; cursor: none; }
+.hacker-cursor {
+  position: fixed; top: 0; left: 0; z-index: 46500; pointer-events: none;
+  filter: drop-shadow(0 0 4px #39ff5a);
+}
+.hacker-tag {
+  display: block; margin-top: 2px; background: #001a00; color: #39ff5a;
+  font-family: 'Courier New', monospace; font-size: 9px; padding: 1px 4px;
+  border: 1px solid #39ff5a; white-space: nowrap;
+}
+
+/* ---------- Post-upgrade hamburger ---------- */
+.hamburger-btn { font-weight: bold; }
+.hamburger-crumb { font-size: 11px; color: #333; align-self: center; }
+.hamburger-menu { top: 22px; left: 0; z-index: 80; min-width: 110px; }
 
 /* ---------- Touch gate ---------- */
 .touchgate-screen { background: #008080; }

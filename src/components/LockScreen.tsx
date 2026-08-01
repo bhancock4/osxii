@@ -47,11 +47,23 @@ export default function LockScreen() {
         <div className="lock-user">🔒</div>
         <h2>OSXii is locked for your security</h2>
         <p className="lock-sub">valued_customer</p>
+        {/* Deliberately NOT type="password": that invites iCloud Keychain /
+            password managers to offer saving whatever someone types into a
+            joke lock screen. Masked with CSS instead; autofill fully opted out. */}
         <input
-          type="password"
+          type="text"
+          className="lock-pass"
           placeholder="Password"
           value={value}
           autoFocus
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck={false}
+          data-1p-ignore="true"
+          data-lpignore="true"
+          data-bwignore="true"
+          data-form-type="other"
           onChange={e => setValue(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && submit()}
         />

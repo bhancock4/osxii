@@ -26,6 +26,7 @@ async function dismissPopups() {
     if (!(await page.locator('.ad-overlay').isVisible().catch(() => false))) return
     const closers = [
       '.ad-close-tiny', '.ad-close-corner', '.ad-nothanks',
+      '.confirm-buttons button[data-safe="true"]',
       '.error-buttons button',
     ]
     let clicked = false
