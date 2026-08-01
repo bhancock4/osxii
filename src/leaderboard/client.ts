@@ -66,31 +66,55 @@ export async function submitScore(entry: ScoreEntry): Promise<{ id: number }> {
 }
 
 /**
- * Top entries for a board. Normal wins rank by score (desc); Total System
- * Liberation ranks by speed (asc) because the score is always ∞.
+ * Top entries for a board, all editions combined (each row carries its
+ * difficulty). Normal wins rank by score (desc); Total System Liberation
+ * ranks by speed (asc) because the score is always ∞.
  */
-export async function fetchTop(difficulty: Difficulty, ending: Ending, limit = 10): Promise<ScoreEntry[]> {
+export async function fetchTop(ending: Ending, limit = 10, difficulty?: Difficulty): Promise<ScoreEntry[]> {
   let q = db()
     .from('scores')
     .select('id, name, difficulty, ending, score, seconds, balance, subs, ads_closed')
-    .eq('difficulty', difficulty)
     .eq('ending', ending)
     .limit(limit)
+  if (difficulty) q = q.eq('difficulty', difficulty)
   q = ending === 'ultrawon' ? q.order('seconds', { ascending: true }) : q.order('score', { ascending: false })
   const { data, error } = await q
   if (error) throw error
   return (data ?? []) as ScoreEntry[]
 }
 
-/** 1-based rank of a submitted entry within its board. */
+/** 1-based worldwide rank of a submitted entry (all editions combined). */
 export async function fetchRank(entry: ScoreEntry): Promise<number> {
   let q = db()
     .from('scores')
     .select('id', { count: 'exact', head: true })
-    .eq('difficulty', entry.difficulty)
     .eq('ending', entry.ending)
   q = entry.ending === 'ultrawon' ? q.lt('seconds', Math.round(entry.seconds)) : q.gt('score', Math.round(entry.score))
   const { count, error } = await q
   if (error) throw error
   return (count ?? 0) + 1
+}
+
+export type Movement = number | 'new'
+
+/**
+ * Rank movement per entry since this browser last looked at the board:
+ * positive = climbed, negative = fell, 'new' = wasn't on the board before.
+ * Persists the current ranks as the new baseline.
+ */
+export function computeMovement(ending: Ending, rows: ScoreEntry[]): Record<number, Movement> {
+  const key = `osxii_lb_ranks_${ending}`
+  let prev: Record<string, number> = {}
+  try { prev = JSON.parse(localStorage.getItem(key) ?? '{}') } catch { /* corrupted baseline: everyone is new */ }
+  const movement: Record<number, Movement> = {}
+  const next: Record<string, number> = {}
+  rows.forEach((row, i) => {
+    const rank = i + 1
+    const id = String(row.id)
+    if (prev[id] === undefined) movement[row.id!] = 'new'
+    else movement[row.id!] = prev[id] - rank
+    next[id] = rank
+  })
+  try { localStorage.setItem(key, JSON.stringify(next)) } catch { /* private browsing */ }
+  return movement
 }

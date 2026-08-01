@@ -1,11 +1,13 @@
 import { useGame } from '../state/game'
 import { DIFFICULTIES } from '../chaos/difficulty'
+import { LeaderboardPanel } from '../leaderboard/Leaderboard'
 
 export default function SelectScreen() {
   const start = useGame(s => s.start)
 
   return (
     <div className="fullscreen select-screen">
+      <div className="select-layout">
       <div className="select-card window">
         <div className="title-bar">
           <div className="title-bar-text">OSXii Setup — Choose Your Edition</div>
@@ -27,6 +29,16 @@ export default function SelectScreen() {
           ))}
           <p className="select-footer">All editions cost the same: everything.</p>
         </div>
+      </div>
+      <LeaderboardPanel />
+      <a
+        className="select-repo"
+        href="https://github.com/bhancock4/wondows12"
+        target="_blank"
+        rel="noreferrer"
+      >
+        ⭐ OSXii is open source — github.com/bhancock4/wondows12 (warning: the source code contains spoilers, cats)
+      </a>
       </div>
     </div>
   )
