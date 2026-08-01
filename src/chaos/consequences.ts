@@ -2,6 +2,7 @@ import { useGame } from '../state/game'
 import { useWins } from '../state/windows'
 import { usePopups } from '../state/popups'
 import { ADS } from '../content/ads'
+import { markActivity } from './engine'
 
 /**
  * Real punishments for choosing the destructive option on a system prompt.
@@ -51,6 +52,7 @@ function hang() {
   usePopups.setState({ hung: true })
   setTimeout(() => {
     usePopups.setState({ hung: false })
+    markActivity() // blocked input isn't idleness; don't let the lock screen pounce
     usePopups.getState().spawnError({
       title: 'OSXii',
       body: 'OSXii has recovered from not responding. It remains unresponsive emotionally.',
@@ -94,6 +96,7 @@ function hacker() {
   // Control returns only after the taunt finishes typing (~13s at 48ms/char).
   setTimeout(() => {
     usePopups.setState({ hacked: false })
+    markActivity() // blocked input isn't idleness; don't let the lock screen pounce
     usePopups.getState().toast('Remote Assistance session ended. Please rate your hacker: ⭐⭐⭐⭐⭐')
   }, 18500)
 }

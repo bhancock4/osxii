@@ -105,6 +105,16 @@ function onActivity() {
   lastActivity = Date.now()
 }
 
+/**
+ * Reset the idle clock from outside the engine. Consequences that BLOCK input
+ * (hacker takeover, hang) must call this when control returns — otherwise the
+ * player's forced helplessness reads as idleness and the lock screen pounces
+ * the moment they get their mouse back.
+ */
+export function markActivity(): void {
+  onActivity()
+}
+
 function onMove() {
   inputStats.moves++
   onActivity()
