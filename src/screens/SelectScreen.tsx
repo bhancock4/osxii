@@ -33,11 +33,11 @@ export default function SelectScreen() {
       <LeaderboardPanel />
       <a
         className="select-repo"
-        href="https://github.com/bhancock4/wondows12"
+        href="https://github.com/bhancock4/osxii"
         target="_blank"
         rel="noreferrer"
       >
-        ⭐ OSXii is open source — github.com/bhancock4/wondows12 (warning: the source code contains spoilers, cats)
+        ⭐ OSXii is open source — github.com/bhancock4/osxii (warning: the source code contains spoilers, cats)
       </a>
       </div>
     </div>

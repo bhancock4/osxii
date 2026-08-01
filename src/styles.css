@@ -376,7 +376,11 @@ body { font-size: 12px; }
 .leaderboard { margin: 10px auto 4px; max-width: 360px; }
 .lb-title { font-weight: bold; margin-bottom: 6px; }
 .lb-form { display: flex; gap: 6px; justify-content: center; }
-.lb-form input { width: 160px; }
+.lb-arcade-input {
+  width: 64px; text-align: center; text-transform: uppercase;
+  font-family: 'Courier New', monospace; font-weight: bold;
+  font-size: 16px; letter-spacing: 6px;
+}
 .lb-note { font-size: 11px; color: #444; margin: 6px 0; }
 .ultimate-screen .lb-note { color: #8fbf8f; }
 .lb-rank { font-weight: bold; color: #006400; font-size: 13px; }
@@ -401,7 +405,19 @@ body { font-size: 12px; }
 .ultimate-screen .lb-me { background: #123312; }
 .ultimate-screen .lb-title { color: #d8ffd8; }
 
+/* ---------- Touch gate ---------- */
+.touchgate-screen { background: #008080; }
+.touchgate-body { padding: 14px; text-align: center; }
+.touchgate-icon { font-size: 30px; }
+.touchgate-body button { margin-top: 6px; padding: 6px 14px; }
+.touchgate-swear p { font-style: italic; }
+
 /* ---------- Animations ---------- */
+/* The game leans on blink/shake/pulse for comedic hostility; none of it is
+   gameplay-critical, so honor reduced-motion fully. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; }
+}
 @keyframes blink { 50% { opacity: 0.25; } }
 @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.045); } }
 @keyframes shake {

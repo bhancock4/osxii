@@ -84,6 +84,8 @@ interface GameState {
   root: FolderNode
   status: GameStatus
   difficulty: Difficulty
+  /** Unique per game run; part of the leaderboard submission provenance. */
+  sessionId: string
   startedAt: number
   wonAt: number | null
   balance: number
@@ -131,6 +133,7 @@ export const useGame = create<GameState>()((set, get) => ({
   root: initialRoot(),
   status: 'boot',
   difficulty: 'pro',
+  sessionId: crypto.randomUUID(),
   startedAt: Date.now(),
   wonAt: null,
   balance: 250,
@@ -146,6 +149,7 @@ export const useGame = create<GameState>()((set, get) => ({
   start: difficulty => set({
     status: 'playing',
     difficulty,
+    sessionId: crypto.randomUUID(),
     startedAt: Date.now(),
     balance: DIFFICULTIES[difficulty].startBalance,
     day: 1,

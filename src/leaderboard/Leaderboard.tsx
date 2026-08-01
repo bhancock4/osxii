@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { DIFFICULTIES, type Difficulty } from '../chaos/difficulty'
 import {
-  leaderboardEnabled, savedName, rememberName,
+  leaderboardEnabled, savedName, rememberName, sanitizeName,
   submitScore, fetchTop, fetchRank, computeMovement,
   type Ending, type ScoreEntry, type Movement,
 } from './client'
@@ -92,7 +92,7 @@ export default function Leaderboard({ entry }: { entry: Omit<ScoreEntry, 'name'>
   if (!leaderboardEnabled()) return null
 
   const submit = async () => {
-    const trimmed = name.trim().slice(0, 24)
+    const trimmed = sanitizeName(name)
     if (!trimmed) return
     rememberName(trimmed)
     setPhase('submitting')
@@ -116,10 +116,12 @@ export default function Leaderboard({ entry }: { entry: Omit<ScoreEntry, 'name'>
       {phase === 'form' && (
         <div className="lb-form">
           <input
-            maxLength={24}
-            placeholder="valued_customer"
+            className="lb-arcade-input"
+            maxLength={3}
+            placeholder="AAA"
+            title="Three characters. Like the arcade. You know what to do."
             value={name}
-            onChange={e => setName(e.target.value)}
+            onChange={e => setName(sanitizeName(e.target.value))}
             onKeyDown={e => e.key === 'Enter' && submit()}
           />
           <button disabled={!name.trim()} onClick={submit}>Immortalize Me</button>

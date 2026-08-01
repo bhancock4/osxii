@@ -4,10 +4,20 @@ import { usePopups } from '../state/popups'
 import { TOASTS } from '../content/errors'
 import { DAY_MS } from './difficulty'
 
+// Module-level state is reset only by a full page reload — "Play Again" is
+// window.location.reload() on purpose. In-place restart would leak intervals,
+// listeners, and these counters; don't add one without redesigning this file.
 let started = false
 let clickCount = 0
 let clickThreshold = 18 + Math.floor(Math.random() * 9)
 let lastActivity = Date.now()
+
+/** Raw input-event counters for the whole session; hashed into score submissions. */
+const inputStats = { moves: 0, clicks: 0, keys: 0 }
+
+export function getSessionStats(): { moves: number; clicks: number; keys: number } {
+  return { ...inputStats }
+}
 
 /** Ramps 0 → 1 over the first 2.5 minutes of play */
 function chaosLevel(): number {
@@ -38,6 +48,8 @@ function tick() {
   // Idle players get *clearable* annoyances (errors, prompts, tips) — the
   // punishment for wandering off is busywork, never silent bankruptcy.
   const nag = idleMs() > c.idleNagMs ? 1.8 : 1
+  // One roll, accumulating thresholds: events are mutually exclusive and the
+  // ORDER of pick() calls below is part of the tuning — reordering changes odds.
   const roll = Math.random()
   let acc = 0
   const pick = (p: number) => {
@@ -90,6 +102,21 @@ function onActivity() {
   lastActivity = Date.now()
 }
 
+function onMove() {
+  inputStats.moves++
+  onActivity()
+}
+
+function onDown() {
+  inputStats.clicks++
+  onActivity()
+}
+
+function onKey() {
+  inputStats.keys++
+  onActivity()
+}
+
 function onGlobalClick() {
   if (!playing()) return
   clickCount++
@@ -104,9 +131,9 @@ export function startChaos() {
   if (started) return
   started = true
   window.addEventListener('click', onGlobalClick, true)
-  window.addEventListener('pointermove', onActivity, { passive: true })
-  window.addEventListener('pointerdown', onActivity, { passive: true, capture: true })
-  window.addEventListener('keydown', onActivity, { passive: true, capture: true })
+  window.addEventListener('pointermove', onMove, { passive: true })
+  window.addEventListener('pointerdown', onDown, { passive: true, capture: true })
+  window.addEventListener('keydown', onKey, { passive: true, capture: true })
   lastActivity = Date.now()
   setInterval(tick, 3000)
   setInterval(dayTick, DAY_MS)

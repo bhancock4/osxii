@@ -3,6 +3,11 @@
 *The operating system that is legally an operating system.*
 *(formerly Wondows12)*
 
+## ▶ [Play it now: osxii.vercel.app](https://osxii.vercel.app)
+
+Global arcade leaderboards included. Warning: reading the source code spoils
+the secrets. So does the README you are holding. Turn back.
+
 ![OSXii gameplay: creating win.txt against all odds](docs/demo.gif)
 
 ## The game
@@ -60,14 +65,33 @@ balance/difficulty knobs (edition configs, month length, chaos multipliers,
 dial-up odds, cat quota, lock timing) live in `src/chaos/difficulty.ts`; event
 probabilities live in `src/chaos/engine.ts`.
 
-Global leaderboards (per edition, separate boards for regular wins and the
-Total System Liberation ending) are backed by Supabase — anonymous name-entry
-submissions, RLS + CHECK constraints on the `scores` table, client in
-`src/leaderboard/`. No login required; glory is opt-in.
+Global leaderboards (arcade-style 3-character names; separate boards for
+regular wins and the Total System Liberation ending) are backed by Supabase —
+anonymous submissions, no login, glory is opt-in. Scores are validated
+server-side by a Postgres trigger: a per-run session hash over input-activity
+counters, a unique session id (no replays), deterministic recomputation of the
+score formula, and plausibility floors. It's tamper-resistance, not
+cryptography — but forging a score now requires actually reading the code,
+at which point you've earned it.
+
+## Development
+
+```sh
+npm test           # unit tests (vitest)
+npm run test:e2e   # playwright e2e against a production build
+```
+
+Pushes to `main` deploy to production automatically via Vercel. CI runs unit
+tests, the build, and the e2e suite on every push/PR. The e2e leaderboard spec
+writes to the real database, so it runs locally only.
+
+Balance/difficulty tuning lives in `src/chaos/difficulty.ts` (edition configs)
+and `src/chaos/engine.ts` (event probabilities). See `CLAUDE.md` for the
+invariants that keep the game honest.
 
 ## Legal
 
-OSXii is a parody and is not affiliated with, endorsed by, or emotionally
-supported by any real operating system vendor, living or discontinued. By
-reading this README you grant OSXii a non-exclusive, royalty-free,
-fully transferable license to your left shoe.
+MIT licensed (see LICENSE). OSXii is a parody and is not affiliated with,
+endorsed by, or emotionally supported by any real operating system vendor,
+living or discontinued. By reading this README you grant OSXii a
+non-exclusive, royalty-free, fully transferable license to your left shoe.

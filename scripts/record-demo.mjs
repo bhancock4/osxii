@@ -72,7 +72,10 @@ async function cmd(text, pauseAfter = 900) {
 console.log('navigating...')
 await page.goto(URL_UNDER_TEST)
 
-// boot screen plays out
+// boot screen plays out, then choose an edition (admire the leaderboard first)
+await page.waitForSelector('.select-card', { timeout: 20000 })
+await sleep(2200)
+await page.locator('.select-option', { hasText: 'Professional' }).click()
 await page.waitForSelector('.desktop', { timeout: 20000 })
 console.log('desktop up, admiring README...')
 await sleep(3200)
@@ -111,9 +114,12 @@ await sleep(1000)
 await cmd('cd My Documents')
 await cmd('dir')
 await cmd('whoami', 700)
+await cmd('type win.txt', 700) // does not exist yet; the system enjoys saying so
 await cmd('mkdir win_files', 700) // insurance in case Explorer's async chaos ate the folder
 await cmd('cd win_files', 700)
-await cmd('dir', 1200) // 6th command → guaranteed ad
+await cmd('help', 600)
+await cmd('cls', 500)
+await cmd('dir', 1200) // 9th command → guaranteed ad
 
 // an ad should be up — fall for the giant button on purpose
 await sleep(1400)

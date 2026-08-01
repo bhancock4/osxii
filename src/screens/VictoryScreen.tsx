@@ -6,8 +6,11 @@ export function computeScore(seconds: number, balance: number, subs: number, ads
 }
 
 export default function VictoryScreen() {
-  const { startedAt, wonAt, balance, subscriptions, stats, difficulty } = useGame()
+  const { startedAt, wonAt, balance: rawBalance, subscriptions, stats, difficulty } = useGame()
   const seconds = Math.round(((wonAt ?? Date.now()) - startedAt) / 1000)
+  // Round to cents BEFORE scoring so the displayed/submitted score matches
+  // what the server-side validation trigger recomputes from stored columns.
+  const balance = Math.round(rawBalance * 100) / 100
   const score = computeScore(seconds, balance, subscriptions.length, stats.adsClosed)
 
   return (
