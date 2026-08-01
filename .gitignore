@@ -3,3 +3,4 @@ dist
 scripts/video
 *.local
 .DS_Store
+.vercel
