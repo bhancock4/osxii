@@ -252,6 +252,135 @@ body { font-size: 12px; }
 .frozen-hold { font-style: italic; color: #8fa3d0; }
 .frozen-btn { font-size: 14px; padding: 8px 18px; margin-top: 12px; }
 
+/* ---------- Calendar tray ---------- */
+.calendar { white-space: nowrap; }
+.calendar-warn { color: #b00000; font-weight: bold; animation: blink 1s steps(2) infinite; }
+
+/* ---------- Ribbon (Notepad) ---------- */
+.ribbon-tabs { display: flex; gap: 1px; margin-bottom: 2px; flex-wrap: wrap; }
+.ribbon-tab-active { background: #000080; color: #fff; }
+.ribbon-row {
+  display: flex; gap: 2px; flex-wrap: wrap; align-items: center;
+  background: #d8d8d8; border: 1px solid #999; padding: 3px; margin-bottom: 3px;
+}
+.ribbon-item-wrap { position: relative; }
+.ribbon-item {
+  min-width: 0; padding: 2px 7px; font-size: 11px;
+  box-shadow: none; background: none; border: 1px solid transparent;
+}
+.ribbon-item:hover { border: 1px solid #808080; background: #eee; }
+.ribbon-sub { top: 22px; left: 0; z-index: 70; }
+
+/* ---------- Confirm dialogs ---------- */
+.confirm-buttons { gap: 10px; }
+.confirm-buttons button { min-width: 90px; }
+
+/* ---------- Lock screen ---------- */
+.lock-screen {
+  background: linear-gradient(160deg, #0b2a6b, #123b8f 60%, #0a1f4e);
+  z-index: 45000;
+}
+.lock-card { text-align: center; color: #fff; }
+.lock-time { font-size: 54px; font-weight: bold; text-shadow: 2px 2px 3px rgba(0,0,0,.5); }
+.lock-user { font-size: 56px; margin: 18px 0 6px; }
+.lock-card h2 { margin: 0 0 2px; font-weight: normal; }
+.lock-sub { margin: 0 0 16px; color: #bcd0f5; }
+.lock-card input { width: 200px; margin-right: 6px; }
+.lock-msg { margin-top: 12px; min-height: 16px; color: #ffb3b3; }
+.lock-forgot {
+  margin-top: 20px; background: none; border: none; box-shadow: none;
+  color: #9db8ea; text-decoration: underline; min-width: 0; cursor: pointer;
+}
+.lock-shake { animation: shake 0.4s; }
+
+/* ---------- Dial-up ---------- */
+.dialup { width: 380px; }
+.dialup-body { display: flex; flex-direction: column; gap: 8px; }
+.dialup-art { font-size: 28px; text-align: center; }
+.dialup-why { margin: 0; font-size: 11px; color: #444; }
+.dialup-log {
+  background: #000; color: #7CFC00; font-family: 'Courier New', monospace;
+  font-size: 11px; padding: 6px; height: 108px; overflow-y: auto;
+  border: 2px inset #fff;
+}
+.dialup-bar { width: 100%; height: 16px; }
+
+/* ---------- Cat dump ---------- */
+.cat-grid {
+  flex: 1; min-height: 0; overflow-y: auto;
+  background: #fff; border: 2px inset #fff; padding: 6px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  gap: 6px; align-content: start;
+}
+.cat-tile {
+  text-align: center; cursor: pointer; padding: 4px 2px; border: 1px solid transparent;
+}
+.cat-tile img { width: 44px; height: 44px; }
+.cat-tile span {
+  display: block; font-size: 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.cat-tile.selected { background: #000080; color: #fff; border: 1px dotted #fff; }
+.cat-loading { grid-column: 1 / -1; text-align: center; color: #888; font-style: italic; padding: 8px; }
+
+/* ---------- Post-upgrade "Visual Experience" ---------- */
+.desktop.degraded {
+  background: repeating-linear-gradient(135deg, #ff00aa 0 70px, #00e5ff 70px 140px, #ccff00 140px 210px, #ff6600 210px 280px);
+}
+.degraded, .degraded * { cursor: none !important; }
+.degraded .window { filter: saturate(2.4) contrast(1.05); }
+.degraded .title-bar { background: linear-gradient(90deg, #ff2400, #e8ff00, #ff00d0) !important; }
+.degraded .taskbar { background: linear-gradient(90deg, #ff9ff3, #feca57, #7bed9f); }
+.lag-cursor {
+  position: fixed; top: 0; left: 0; z-index: 60000; pointer-events: none;
+  filter: drop-shadow(1px 1px 1px rgba(0,0,0,.6));
+}
+
+/* ---------- Edition select ---------- */
+.select-screen { background: #008080; }
+.select-card { width: 470px; max-width: 94vw; }
+.select-body { display: flex; flex-direction: column; gap: 8px; padding: 12px; }
+.select-lede { margin: 0 0 4px; }
+.select-option {
+  display: flex; align-items: center; gap: 12px; text-align: left;
+  padding: 10px 12px; cursor: pointer;
+}
+.select-icon { font-size: 26px; }
+.select-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.select-text small { color: #444; }
+.select-install { font-weight: bold; white-space: nowrap; }
+.select-footer { margin: 4px 0 0; text-align: center; color: #666; font-size: 11px; }
+
+/* ---------- Ultimate victory ---------- */
+.ultimate-screen { background: #000; color: #d8ffd8; font-family: 'Courier New', monospace; }
+.ultimate-body { max-width: 560px; padding: 20px; }
+.ultimate-scroll { text-align: left; color: #7CFC00; font-size: 13px; }
+.ultimate-scroll p { margin: 2px 0; }
+.ultimate-done { font-weight: bold; }
+.ultimate-title { font-size: 26px; margin: 18px 0 8px; color: #fff; animation: blink 1.4s steps(2) infinite; }
+.ultimate-sub { color: #b8e6b8; }
+.ultimate-stats { color: #d8ffd8; }
+.ultimate-stats td { border-color: #2f6b2f; }
+.ultimate-score { color: #7CFC00; font-size: 26px; margin: 12px 0 4px; }
+.ultimate-small { color: #6a9a6a; font-size: 11px; }
+
+/* ---------- Leaderboard ---------- */
+.leaderboard { margin: 10px auto 4px; max-width: 360px; }
+.lb-title { font-weight: bold; margin-bottom: 6px; }
+.lb-form { display: flex; gap: 6px; justify-content: center; }
+.lb-form input { width: 160px; }
+.lb-note { font-size: 11px; color: #444; margin: 6px 0; }
+.ultimate-screen .lb-note { color: #8fbf8f; }
+.lb-rank { font-weight: bold; color: #006400; font-size: 13px; }
+.ultimate-screen .lb-rank { color: #7CFC00; }
+.lb-retry { min-width: 0; padding: 1px 8px; }
+.lb-table { margin: 8px auto 0; border-collapse: collapse; font-size: 11px; }
+.lb-table th, .lb-table td { border: 1px solid #999; padding: 2px 10px; text-align: left; }
+.lb-table td:first-child { text-align: right; }
+.lb-me { background: #ffef9e; font-weight: bold; }
+.ultimate-screen .lb-table th, .ultimate-screen .lb-table td { border-color: #2f6b2f; }
+.ultimate-screen .lb-me { background: #123312; }
+.ultimate-screen .lb-title { color: #d8ffd8; }
+
 /* ---------- Animations ---------- */
 @keyframes blink { 50% { opacity: 0.25; } }
 @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.045); } }

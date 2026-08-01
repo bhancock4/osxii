@@ -1,12 +1,12 @@
 import { useGame } from '../state/game'
+import Leaderboard from '../leaderboard/Leaderboard'
 
-// Leaderboard hook for later: POST { name, score, seconds, balance } to Supabase.
 export function computeScore(seconds: number, balance: number, subs: number, adsClosed: number): number {
   return Math.max(0, Math.round(5000 - seconds * 10 + balance * 20 - subs * 300 + adsClosed * 50))
 }
 
 export default function VictoryScreen() {
-  const { startedAt, wonAt, balance, subscriptions, stats } = useGame()
+  const { startedAt, wonAt, balance, subscriptions, stats, difficulty } = useGame()
   const seconds = Math.round(((wonAt ?? Date.now()) - startedAt) / 1000)
   const score = computeScore(seconds, balance, subscriptions.length, stats.adsClosed)
 
@@ -29,7 +29,17 @@ export default function VictoryScreen() {
             </tbody>
           </table>
           <h2 className="victory-score">SCORE: {score.toLocaleString()}</h2>
-          <p className="victory-small">Leaderboards coming in Wondows13 (subscription required).</p>
+          <Leaderboard
+            entry={{
+              difficulty,
+              ending: 'won',
+              score,
+              seconds,
+              balance,
+              subs: subscriptions.length,
+              ads_closed: stats.adsClosed,
+            }}
+          />
           <button className="victory-btn" onClick={() => window.location.reload()}>Play Again</button>
         </div>
       </div>

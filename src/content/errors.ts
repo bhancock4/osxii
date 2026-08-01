@@ -2,17 +2,17 @@ import type { ErrorSpec } from './types'
 
 export const ERROR_DIALOGS: ErrorSpec[] = [
   {
-    title: 'Wondows12',
+    title: 'OSXii',
     body: 'The operation completed unsuccessfully.',
     button: 'OK 🙂',
   },
   {
-    title: 'Wondows12 Error Reporter',
+    title: 'OSXii Error Reporter',
     body: 'An error occurred while displaying the previous error.',
     button: 'Accept',
   },
   {
-    title: 'Wondows12',
+    title: 'OSXii',
     body: 'Success! (Error code: 0x00000000)',
     button: 'My fault',
   },
@@ -22,22 +22,22 @@ export const ERROR_DIALOGS: ErrorSpec[] = [
     button: 'Understood??',
   },
   {
-    title: 'Wondows12',
+    title: 'OSXii',
     body: 'This program has stopped working, but has not been told yet, so please act natural.',
     button: 'Cool',
   },
   {
     title: 'Compatibility Warning',
-    body: 'This file is not compatible with this version of Wondows12, or any version of Wondows12, or files in general.',
+    body: 'This file is not compatible with this version of OSXii, or any version of OSXii, or files in general.',
     button: 'OK 🙂',
   },
   {
-    title: 'Wondows12 Security Center',
+    title: 'OSXii Security Center',
     body: 'We detected a threat and have responded by disabling your mouse for your protection.',
     button: 'Accept',
   },
   {
-    title: 'Wondows12',
+    title: 'OSXii',
     body: 'An unexpected error occurred. We expected it, actually. We just did not tell you.',
     button: 'My fault',
   },
@@ -47,22 +47,22 @@ export const ERROR_DIALOGS: ErrorSpec[] = [
     button: 'Understood??',
   },
   {
-    title: 'Wondows12',
+    title: 'OSXii',
     body: 'This action requires administrator permission, which no one on this device has ever had.',
     button: 'Cool',
   },
   {
-    title: 'Wondows12 Update Center',
+    title: 'OSXii Update Center',
     body: 'An update has failed to fail correctly. Retrying the failure.',
     button: 'OK 🙂',
   },
   {
     title: 'Memory Manager',
-    body: 'A program tried to access memory that Wondows12 was still using emotionally. Please give it space.',
+    body: 'A program tried to access memory that OSXii was still using emotionally. Please give it space.',
     button: 'Accept',
   },
   {
-    title: 'Wondows12',
+    title: 'OSXii',
     body: 'Your recent action has been logged, printed, and mailed to a subsidiary that no longer exists.',
     button: 'My fault',
   },
@@ -72,7 +72,7 @@ export const ERROR_DIALOGS: ErrorSpec[] = [
     button: 'Understood??',
   },
   {
-    title: 'Wondows12',
+    title: 'OSXii',
     body: 'An error has occurred. Would you like to report it to the error that caused it?',
     button: 'Cool',
   },
@@ -80,18 +80,18 @@ export const ERROR_DIALOGS: ErrorSpec[] = [
 
 export const TOASTS: string[] = [
   'Telemetry uploaded (4.2 GB).',
-  'Wondows optimized your experience.',
+  'OSXii optimized your experience.',
   'Your PC ran into a feeling.',
   'A background process has renamed itself "Steve."',
   'System performance improved by an unverifiable amount.',
   'Your desktop wallpaper has been quietly upgraded to a worse one.',
-  'Wondows would like to know how you are doing, emotionally.',
+  'OSXii would like to know how you are doing, emotionally.',
   'A driver was updated without your consent, or knowledge, or interest.',
   'Battery status: yes.',
   'Your privacy settings have been reset to "everything."',
   'This PC is now 3% more synergistic.',
   'A cookie has been baked on your behalf.',
-  'Wondows detected idle time and used it to install something.',
+  'OSXii detected idle time and used it to install something.',
   'Congratulations, you are now a beta tester.',
 ]
 
@@ -109,6 +109,7 @@ export const BINDOWS_TIPS: string[] = [
   'Remember: My Documents is a place, a feeling, and a folder.',
   'Tip: the Recycle Bin is not a suggestion box, but I keep putting suggestions in it anyway.',
   'When in doubt, click the biggest button. It is usually an ad, but sometimes it is progress.',
+  'Between us: the File menu cannot save anything. Try Tools > Document Services. I am so tired.',
   'I am legally required to remind you that I am not a lawyer, doctor, or IT professional.',
 ]
 

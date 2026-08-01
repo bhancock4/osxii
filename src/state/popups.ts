@@ -1,13 +1,17 @@
 import { create } from 'zustand'
 import type { AdSpec, ErrorSpec } from '../content/types'
+import type { ConfirmSpec } from '../content/confirms'
 import { ADS } from '../content/ads'
+import { CONFIRMS } from '../content/confirms'
 import { ERROR_DIALOGS, BINDOWS_TIPS } from '../content/errors'
+import { config } from './game'
 
 export interface Popup {
   id: number
-  kind: 'ad' | 'error'
+  kind: 'ad' | 'error' | 'confirm'
   ad?: AdSpec
   error?: ErrorSpec
+  confirm?: ConfirmSpec
 }
 
 interface PopupStore {
@@ -15,8 +19,11 @@ interface PopupStore {
   toasts: { id: number; text: string }[]
   bindowsTip: string | null
   updateOverlay: boolean
+  /** Post-"upgrade" visual experience: garish colors + laggy cursor. */
+  degraded: boolean
   spawnAd: (adId?: string) => void
   spawnError: (error?: ErrorSpec) => void
+  spawnConfirm: () => void
   closePopup: (id: number) => void
   toast: (text: string) => void
   showBindows: () => void
@@ -27,12 +34,14 @@ interface PopupStore {
 let nextPopupId = 1
 let nextToastId = 1
 let bindowsTimer: ReturnType<typeof setTimeout> | null = null
+let degradeTimer: ReturnType<typeof setTimeout> | null = null
 
 export const usePopups = create<PopupStore>()((set, get) => ({
   popups: [],
   toasts: [],
   bindowsTip: null,
   updateOverlay: false,
+  degraded: false,
 
   spawnAd: adId => {
     const { popups } = get()
@@ -50,6 +59,13 @@ export const usePopups = create<PopupStore>()((set, get) => ({
     if (popups.filter(p => p.kind === 'error').length >= 2) return
     const e = error ?? ERROR_DIALOGS[Math.floor(Math.random() * ERROR_DIALOGS.length)]
     set({ popups: [...popups, { id: nextPopupId++, kind: 'error', error: e }] })
+  },
+
+  spawnConfirm: () => {
+    const { popups } = get()
+    if (popups.some(p => p.kind === 'confirm')) return
+    const c = CONFIRMS[Math.floor(Math.random() * CONFIRMS.length)]
+    set({ popups: [...popups, { id: nextPopupId++, kind: 'confirm', confirm: c }] })
   },
 
   closePopup: id => set(s => ({ popups: s.popups.filter(p => p.id !== id) })),
@@ -76,7 +92,19 @@ export const usePopups = create<PopupStore>()((set, get) => ({
     set({ updateOverlay: true })
     setTimeout(() => {
       set({ updateOverlay: false })
-      get().toast('Update failed. Your files are safe. Probably.')
+      const ms = config().degradeMs
+      if (ms <= 0 || get().degraded) {
+        get().toast('Update failed. Your files are safe. Probably.')
+        return
+      }
+      // The upgrade "succeeded": things immediately get worse.
+      set({ degraded: true })
+      get().toast('✅ Update complete! Enjoy the new OSXii Visual Experience™ and Enhanced Cursor Physics™.')
+      if (degradeTimer) clearTimeout(degradeTimer)
+      degradeTimer = setTimeout(() => {
+        set({ degraded: false })
+        get().toast('Graphics driver recovered from the upgrade. We apologize for the improvement.')
+      }, ms)
     }, 4000)
   },
 }))

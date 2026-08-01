@@ -11,6 +11,7 @@
     "record:demo": "node scripts/record-demo.mjs"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.111.0",
     "98.css": "^0.1.21",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

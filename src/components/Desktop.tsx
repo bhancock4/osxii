@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useGame } from '../state/game'
 import { useWins } from '../state/windows'
 import { usePopups } from '../state/popups'
 import WindowFrame from './WindowFrame'
@@ -7,6 +8,8 @@ import PopupLayer from './PopupLayer'
 import Toasts from './Toasts'
 import Bindows from './Bindows'
 import UpdateOverlay from './UpdateOverlay'
+import LockScreen from './LockScreen'
+import LagCursor from './LagCursor'
 
 const ICONS: { key: string; glyph: string; label: string; action: 'explorer' | 'notepad' | 'terminal' | 'readme' | 'recycle' }[] = [
   { key: 'computer', glyph: '🖥️', label: 'My Computer', action: 'explorer' },
@@ -20,6 +23,8 @@ export default function Desktop() {
   const wins = useWins(s => s.wins)
   const open = useWins(s => s.open)
   const updateOverlay = usePopups(s => s.updateOverlay)
+  const degraded = usePopups(s => s.degraded)
+  const locked = useGame(s => s.locked)
   const [selected, setSelected] = useState<string | null>(null)
 
   const launch = (action: (typeof ICONS)[number]['action']) => {
@@ -36,7 +41,7 @@ export default function Desktop() {
   }
 
   return (
-    <div className="desktop" onClick={() => setSelected(null)}>
+    <div className={'desktop' + (degraded ? ' degraded' : '')} onClick={() => setSelected(null)}>
       <div className="icons">
         {ICONS.map(icon => (
           <div
@@ -61,6 +66,8 @@ export default function Desktop() {
       <Toasts />
       {updateOverlay && <UpdateOverlay />}
       <Taskbar />
+      {degraded && <LagCursor />}
+      {locked && <LockScreen />}
     </div>
   )
 }

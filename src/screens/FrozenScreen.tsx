@@ -8,7 +8,7 @@ export default function FrozenScreen() {
     <div className="fullscreen frozen-screen">
       <div className="frozen-body">
         <h1>:(</h1>
-        <h2>WONDOWS FINANCIAL SERVICES</h2>
+        <h2>OSXII FINANCIAL SERVICES</h2>
         <p>Your personal bank account has been frozen due to an unusual level of enthusiasm for subscriptions.</p>
         <p>Final balance: ${balance.toFixed(2)}</p>
         <div className="frozen-subs">

@@ -1,8 +1,9 @@
-# Wondows12 🪟
+# OSXii 🌀
 
 *The operating system that is legally an operating system.*
+*(formerly Wondows12)*
 
-![Wondows12 gameplay: creating win.txt against all odds](docs/demo.gif)
+![OSXii gameplay: creating win.txt against all odds](docs/demo.gif)
 
 ## The game
 
@@ -17,18 +18,31 @@ and save it to `My Documents\win_files` (you'll have to create that folder yours
 Standing between you and victory: an operating system with massively stochastic
 behavior — errors that fire before the operations they describe, folders that
 appear whenever they feel like it (sometimes twice, to be safe), a Save button
-with a self-preservation instinct, SmartAssist™ "improving" your documents, and
-giant pop-up ads for subscriptions nobody wants at terrible prices. RAM
-Insurance™. PrinterInkPrime+. Premium CPU Oxygen. Cloud backup for your Recycle
-Bin.
+with a self-preservation instinct, SmartAssist™ "improving" your documents,
+alarming OK/Cancel prompts about deleting all files in C:\, and giant pop-up
+ads for subscriptions nobody wants at terrible prices. RAM Insurance™.
+PrinterInkPrime+. Premium CPU Oxygen. Cloud backup for your Recycle Bin.
 
-You start with $250.00. Subscriptions renew every 30 seconds (Wondows Time
-Compression™). If your balance hits $0, your bank account is frozen and the
-game is over. Some ads have fake close buttons. Read before you click.
+Money drains on a visible calendar: one day per second, subscriptions renew on
+Day 1 of every month (OSXii Time Compression™), and the tray calendar blinks
+when a renewal you can't afford is coming. If your balance hits $0, your bank
+account is frozen and the game is over. Wander off for 30 seconds and OSXii
+locks itself; there is a password, and we are not telling you what it is.
 
-Sessions run 3–5 minutes. The in-game `READ ME FIRST.txt` documents everything —
-including a full command-prompt speedrun path for the brave. It will not be for
-lack of documentation that you fail.
+Three editions at install time:
+
+- **🏠 OSXii Home** — gentler ads, longer months, one free overdraft bailout.
+- **💼 OSXii Professional** — the intended experience, with occasional dial-up
+  DRM verification before Notepad will save.
+- **🏢 OSXii Enterprise** — mandatory dial-up, plus a disk quota: saves fail
+  until you delete at least 10 of the 4,096 identical pictures of one cat in
+  `C:\My Pictures\cat_dump`.
+
+Notepad has eight toolbar tabs and dozens of options. Exactly one of them saves
+files. Accepting a system update makes everything immediately worse (new Visual
+Experience™, Enhanced Cursor Physics™). And the in-game `READ ME FIRST.txt`
+documents everything — including a full command-prompt speedrun path, and one
+command you must absolutely never run.
 
 ## Run it
 
@@ -41,15 +55,19 @@ Then open http://localhost:5173 and try to remain calm.
 
 ## Tech
 
-React + Vite + Zustand + [98.css](https://jdan.github.io/98.css/). Everything is
-in-memory — no backend, no persistence. All difficulty knobs (event
-probabilities, chaos ramp, grace period, ad frequency) live in
-`src/chaos/engine.ts`. The victory screen already computes a score, so a
-Supabase leaderboard is a ten-minute add whenever we feel like it.
+React + Vite + Zustand + [98.css](https://jdan.github.io/98.css/). All
+balance/difficulty knobs (edition configs, month length, chaos multipliers,
+dial-up odds, cat quota, lock timing) live in `src/chaos/difficulty.ts`; event
+probabilities live in `src/chaos/engine.ts`.
+
+Global leaderboards (per edition, separate boards for regular wins and the
+Total System Liberation ending) are backed by Supabase — anonymous name-entry
+submissions, RLS + CHECK constraints on the `scores` table, client in
+`src/leaderboard/`. No login required; glory is opt-in.
 
 ## Legal
 
-Wondows12 is a parody and is not affiliated with, endorsed by, or emotionally
+OSXii is a parody and is not affiliated with, endorsed by, or emotionally
 supported by any real operating system vendor, living or discontinued. By
-reading this README you grant Wondows12 a non-exclusive, royalty-free,
+reading this README you grant OSXii a non-exclusive, royalty-free,
 fully transferable license to your left shoe.

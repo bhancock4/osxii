@@ -25,9 +25,9 @@ export const ADS: AdSpec[] = [
   },
   {
     id: 'wondows-pro',
-    productName: 'Wondows12 Pro Ultimate Home Basic Premium Starter Edition',
-    headline: 'Unlock The REAL Wondows12',
-    body: 'You are currently using Wondows12 Regular, which is legally required to disappoint you. Upgrade to Wondows12 Pro Ultimate Home Basic Premium Starter Edition to unlock features such as: the taskbar, closing this ad faster, and the number 12.',
+    productName: 'OSXii Pro Ultimate Home Basic Premium Starter Edition',
+    headline: 'Unlock The REAL OSXii',
+    body: 'You are currently using OSXii Regular, which is legally required to disappoint you. Upgrade to OSXii Pro Ultimate Home Basic Premium Starter Edition to unlock features such as: the taskbar, closing this ad faster, and the number 12.',
     price: '$349.99/yr (or 12 easy payments of $349.99)',
     monthlyCost: 34.99,
     ctaLabel: 'UPGRADE MY LIFE',

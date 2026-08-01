@@ -69,6 +69,40 @@ function AdPopup({ popup, ad, offset }: { popup: Popup; ad: AdSpec; offset: numb
   )
 }
 
+function ConfirmPopup({ popup, offset }: { popup: Popup; offset: number }) {
+  const closePopup = usePopups(s => s.closePopup)
+  const toast = usePopups(s => s.toast)
+  const promptSurvived = useGame(s => s.promptSurvived)
+  const c = popup.confirm!
+  // Keep them on their toes: OK and Cancel swap sides per prompt.
+  const swapped = popup.id % 2 === 1
+  const answer = (text: string) => {
+    promptSurvived()
+    closePopup(popup.id)
+    toast(text)
+  }
+  const okBtn = <button key="ok" onClick={() => answer(c.okToast)}>{c.okLabel}</button>
+  const cancelBtn = <button key="cancel" onClick={() => answer(c.cancelToast)}>{c.cancelLabel}</button>
+  return (
+    <div className="popup" style={{ transform: `translate(-50%, -50%) translate(${offset * 34 - 40}px, ${offset * 34 + 30}px)` }}>
+      <div className="window error-dialog">
+        <div className="title-bar">
+          <div className="title-bar-text">{c.title}</div>
+        </div>
+        <div className="window-body">
+          <div className="error-row">
+            <span className="error-icon">⚠️</span>
+            <p>{c.body}</p>
+          </div>
+          <div className="error-buttons confirm-buttons">
+            {swapped ? [cancelBtn, okBtn] : [okBtn, cancelBtn]}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function ErrorPopup({ popup, offset }: { popup: Popup; offset: number }) {
   const closePopup = usePopups(s => s.closePopup)
   const errorSeen = useGame(s => s.errorSeen)
@@ -102,6 +136,8 @@ export default function PopupLayer() {
       {popups.map((p, i) =>
         p.kind === 'ad' ? (
           <AdPopup key={p.id} popup={p} ad={p.ad!} offset={i} />
+        ) : p.kind === 'confirm' ? (
+          <ConfirmPopup key={p.id} popup={p} offset={i} />
         ) : (
           <ErrorPopup key={p.id} popup={p} offset={i} />
         )

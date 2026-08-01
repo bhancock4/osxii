@@ -18,7 +18,7 @@ export interface Win {
 const DEFAULTS: Record<AppType, { title: string; w: number; h: number }> = {
   notepad: { title: 'Untitled - Notepad', w: 480, h: 380 },
   explorer: { title: 'My Computer', w: 540, h: 400 },
-  terminal: { title: 'C:\\WONDOWS\\cmd.exe', w: 580, h: 360 },
+  terminal: { title: 'C:\\OSXII\\cmd.exe', w: 580, h: 360 },
   readme: { title: 'READ ME FIRST.txt - Notepad', w: 520, h: 440 },
 }
 

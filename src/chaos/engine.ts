@@ -1,11 +1,13 @@
-import { useGame } from '../state/game'
+import { useGame, config } from '../state/game'
 import { useWins } from '../state/windows'
 import { usePopups } from '../state/popups'
 import { TOASTS } from '../content/errors'
+import { DAY_MS } from './difficulty'
 
 let started = false
 let clickCount = 0
-let clickThreshold = 12 + Math.floor(Math.random() * 7)
+let clickThreshold = 18 + Math.floor(Math.random() * 9)
+let lastActivity = Date.now()
 
 /** Ramps 0 → 1 over the first 2.5 minutes of play */
 function chaosLevel(): number {
@@ -17,36 +19,75 @@ function playing(): boolean {
   return useGame.getState().status === 'playing'
 }
 
+function paused(): boolean {
+  return useGame.getState().locked || usePopups.getState().updateOverlay
+}
+
+function idleMs(): number {
+  return Date.now() - lastActivity
+}
+
 function tick() {
-  if (!playing()) return
-  const { updateOverlay, spawnAd, spawnError, showBindows, showUpdate, toast } = usePopups.getState()
-  if (updateOverlay) return
+  if (!playing() || paused()) return
+  const { spawnAd, spawnError, spawnConfirm, showBindows, showUpdate, toast } = usePopups.getState()
+  const c = config()
   const elapsed = Date.now() - useGame.getState().startedAt
-  if (elapsed < 15000) return // grace period: let them read the README
+  if (elapsed < c.graceMs) return // grace period: let them read the README
   const level = chaosLevel()
+  const mul = c.chaosMul
+  // Idle players get *clearable* annoyances (errors, prompts, tips) — the
+  // punishment for wandering off is busywork, never silent bankruptcy.
+  const nag = idleMs() > c.idleNagMs ? 1.8 : 1
   const roll = Math.random()
   let acc = 0
   const pick = (p: number) => {
     acc += p
     return roll < acc
   }
-  if (pick(0.07 + 0.12 * level)) return spawnAd()
-  if (pick(0.07 + 0.08 * level)) return spawnError()
-  if (pick(0.05 * level)) {
-    if (useWins.getState().minimizeRandom()) toast('✨ Wondows optimized your workspace!')
+  if (pick((0.05 + 0.08 * level) * mul)) return spawnAd()
+  if (pick((0.05 + 0.06 * level) * mul * nag)) return spawnError()
+  if (pick((0.02 + 0.03 * level) * mul * nag)) return spawnConfirm()
+  if (pick(0.04 * level * mul)) {
+    if (useWins.getState().minimizeRandom()) toast('✨ OSXii optimized your workspace!')
     return
   }
-  if (pick(0.06)) return showBindows()
-  if (pick(0.04 * level)) return showUpdate()
+  if (pick(0.06 * nag)) return showBindows()
+  if (pick(0.03 * level * mul)) return showUpdate()
   if (pick(0.08)) return toast(TOASTS[Math.floor(Math.random() * TOASTS.length)])
 }
 
-function renewTick() {
-  if (!playing()) return
-  const charged = useGame.getState().renewAll()
-  if (charged > 0) {
-    usePopups.getState().toast(`💳 Monthly renewals processed: -$${charged.toFixed(2)} (Wondows Time Compression™)`)
+function dayTick() {
+  if (!playing() || paused()) return
+  const g = useGame.getState()
+  const c = config()
+  const result = g.advanceDay()
+  const { toast } = usePopups.getState()
+  if (result && result.charged > 0) {
+    toast(
+      result.overdraft
+        ? `💳 Renewals: -$${result.charged.toFixed(2)}. Overdraft Protection™ saved you. Once. Never again.`
+        : `💳 It's Day 1! Renewals processed: -$${result.charged.toFixed(2)} (OSXii Time Compression™)`
+    )
+    return
   }
+  // Heads-up a few days before an unaffordable renewal — the loss should be
+  // visible on the calendar, never a surprise.
+  const after = useGame.getState()
+  const total = after.subscriptions.reduce((s, sub) => s + sub.price, 0)
+  if (total > 0 && after.day === c.monthDays - 5 && after.balance - total <= 0) {
+    toast(`⚠️ Renewals of $${total.toFixed(2)} due on Day 1. You cannot afford them. Just so you know.`)
+  }
+}
+
+function lockTick() {
+  if (!playing() || paused()) return
+  if (idleMs() >= config().lockIdleMs) {
+    useGame.getState().lock()
+  }
+}
+
+function onActivity() {
+  lastActivity = Date.now()
 }
 
 function onGlobalClick() {
@@ -54,7 +95,7 @@ function onGlobalClick() {
   clickCount++
   if (clickCount >= clickThreshold) {
     clickCount = 0
-    clickThreshold = 12 + Math.floor(Math.random() * 7)
+    clickThreshold = 18 + Math.floor(Math.random() * 9)
     usePopups.getState().spawnAd()
   }
 }
@@ -63,17 +104,22 @@ export function startChaos() {
   if (started) return
   started = true
   window.addEventListener('click', onGlobalClick, true)
+  window.addEventListener('pointermove', onActivity, { passive: true })
+  window.addEventListener('pointerdown', onActivity, { passive: true, capture: true })
+  window.addEventListener('keydown', onActivity, { passive: true, capture: true })
+  lastActivity = Date.now()
   setInterval(tick, 3000)
-  setInterval(renewTick, 30000)
+  setInterval(dayTick, DAY_MS)
+  setInterval(lockTick, 1000)
 }
 
 // ---- Targeted sabotage helpers ----
 
 let sabotageCount = 0
 
-/** SmartAssist™: occasionally "improves" a winning document. Max twice, always announced. */
+/** SmartAssist™: occasionally "improves" a winning document. Bounded per difficulty, always announced. */
 export function maybeSabotageText(text: string): { text: string; sabotaged: boolean } {
-  if (sabotageCount >= 2) return { text, sabotaged: false }
+  if (sabotageCount >= config().sabotageMax) return { text, sabotaged: false }
   if (text.trimEnd() !== 'I did it!') return { text, sabotaged: false }
   if (Math.random() < 0.45) {
     sabotageCount++
