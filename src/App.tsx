@@ -1,7 +1,9 @@
 import { useEffect } from 'react'
 import { useGame } from './state/game'
 import { useWins } from './state/windows'
+import { useTimesheet } from './state/timesheet'
 import { startChaos } from './chaos/engine'
+import { startStrategyLens } from './chaos/slEngine'
 import { useState } from 'react'
 import BootScreen from './screens/BootScreen'
 import SelectScreen from './screens/SelectScreen'
@@ -9,6 +11,8 @@ import TouchGate, { needsTouchGate } from './screens/TouchGate'
 import VictoryScreen from './screens/VictoryScreen'
 import UltimateScreen from './screens/UltimateScreen'
 import FrozenScreen from './screens/FrozenScreen'
+import SLVictoryScreen from './screens/SLVictoryScreen'
+import ShameScreen from './screens/ShameScreen'
 import Desktop from './components/Desktop'
 
 export default function App() {
@@ -16,7 +20,11 @@ export default function App() {
   const [gated, setGated] = useState(needsTouchGate)
 
   useEffect(() => {
-    if (status === 'playing') {
+    if (status !== 'playing') return
+    if (useGame.getState().module === 'strategylens') {
+      startStrategyLens(useTimesheet.getState().playerName)
+      useWins.getState().open('claritymail')
+    } else {
       useWins.getState().open('readme')
       startChaos()
     }
@@ -28,5 +36,7 @@ export default function App() {
   if (status === 'won') return <VictoryScreen />
   if (status === 'ultrawon') return <UltimateScreen />
   if (status === 'frozen') return <FrozenScreen />
+  if (status === 'slwon') return <SLVictoryScreen />
+  if (status === 'slshamed') return <ShameScreen />
   return <Desktop />
 }

@@ -140,14 +140,27 @@ function onGlobalClick() {
   }
 }
 
-export function startChaos() {
-  if (started) return
-  started = true
-  window.addEventListener('click', onGlobalClick, true)
+let inputTracked = false
+
+/**
+ * Register the session-wide input counters (score provenance) without the
+ * classic chaos loops. The StrategyLens engine shares these — the leaderboard
+ * trigger demands activity counters regardless of which module was played.
+ */
+export function trackInput() {
+  if (inputTracked) return
+  inputTracked = true
   window.addEventListener('pointermove', onMove, { passive: true })
   window.addEventListener('pointerdown', onDown, { passive: true, capture: true })
   window.addEventListener('keydown', onKey, { passive: true, capture: true })
   lastActivity = Date.now()
+}
+
+export function startChaos() {
+  if (started) return
+  started = true
+  window.addEventListener('click', onGlobalClick, true)
+  trackInput()
   setInterval(tick, 3000)
   setInterval(dayTick, DAY_MS)
   setInterval(lockTick, 1000)

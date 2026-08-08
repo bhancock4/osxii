@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-export type AppType = 'notepad' | 'explorer' | 'terminal' | 'readme'
+export type AppType = 'notepad' | 'explorer' | 'terminal' | 'readme' | 'claritymail' | 'strategylens'
 
 export interface Win {
   id: number
@@ -20,6 +20,8 @@ const DEFAULTS: Record<AppType, { title: string; w: number; h: number }> = {
   explorer: { title: 'My Computer', w: 540, h: 400 },
   terminal: { title: 'C:\\OSXII\\cmd.exe', w: 580, h: 360 },
   readme: { title: 'READ ME FIRST.txt - Notepad', w: 520, h: 440 },
+  claritymail: { title: 'ClarityMail™ — Inbox', w: 680, h: 460 },
+  strategylens: { title: 'StrategyLens® Time Entry — part of the ClarityOne™ Suite', w: 820, h: 560 },
 }
 
 interface WinStore {

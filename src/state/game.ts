@@ -76,13 +76,17 @@ function isWin(root: FolderNode): boolean {
 
 export interface Subscription { name: string; price: number }
 
-export type GameStatus = 'boot' | 'select' | 'playing' | 'won' | 'ultrawon' | 'frozen'
+export type GameStatus = 'boot' | 'select' | 'playing' | 'won' | 'ultrawon' | 'frozen' | 'slwon' | 'slshamed'
+
+/** Which game is being played: the classic win.txt quest, or corporate time entry. */
+export type GameModule = 'classic' | 'strategylens'
 
 export interface RenewResult { charged: number; overdraft: boolean }
 
 interface GameState {
   root: FolderNode
   status: GameStatus
+  module: GameModule
   difficulty: Difficulty
   /** Unique per game run; part of the leaderboard submission provenance. */
   sessionId: string
@@ -98,6 +102,9 @@ interface GameState {
   stats: { adsClosed: number; errorsSeen: number; accidentalSubs: number; promptsSurvived: number }
   boot: () => void
   start: (difficulty: Difficulty) => void
+  startStrategyLens: () => void
+  slWin: () => void
+  slLose: () => void
   mkdir: (path: string[], name: string) => boolean
   mkdirPath: (path: string[], input: string) => string[] | null
   writeFile: (path: string[], name: string, content: string) => boolean
@@ -132,6 +139,7 @@ function applyCharge(balance: number, amount: number, overdraftAvailable: boolea
 export const useGame = create<GameState>()((set, get) => ({
   root: initialRoot(),
   status: 'boot',
+  module: 'classic',
   difficulty: 'pro',
   sessionId: crypto.randomUUID(),
   startedAt: Date.now(),
@@ -148,12 +156,28 @@ export const useGame = create<GameState>()((set, get) => ({
 
   start: difficulty => set({
     status: 'playing',
+    module: 'classic',
     difficulty,
     sessionId: crypto.randomUUID(),
     startedAt: Date.now(),
     balance: DIFFICULTIES[difficulty].startBalance,
     day: 1,
   }),
+
+  startStrategyLens: () => set({
+    status: 'playing',
+    module: 'strategylens',
+    sessionId: crypto.randomUUID(),
+    startedAt: Date.now(),
+  }),
+
+  slWin: () => {
+    if (get().status === 'playing') set({ status: 'slwon', wonAt: Date.now() })
+  },
+
+  slLose: () => {
+    if (get().status === 'playing') set({ status: 'slshamed', wonAt: Date.now() })
+  },
 
   mkdir: (path, name) => {
     const trimmed = name.trim()
@@ -197,7 +221,7 @@ export const useGame = create<GameState>()((set, get) => ({
       f.children[trimmed] = file(content)
     })
     if (!next) return false
-    if (isWin(next) && get().status === 'playing') {
+    if (isWin(next) && get().status === 'playing' && get().module === 'classic') {
       set({ root: next, status: 'won', wonAt: Date.now() })
     } else {
       set({ root: next })

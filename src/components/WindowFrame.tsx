@@ -4,6 +4,8 @@ import Notepad from '../apps/Notepad'
 import Explorer from '../apps/Explorer'
 import Terminal from '../apps/Terminal'
 import ReadmeViewer from '../apps/ReadmeViewer'
+import ClarityMail from '../apps/ClarityMail'
+import StrategyLens from '../apps/StrategyLens'
 
 export default function WindowFrame({ win }: { win: Win }) {
   const focus = useWins(s => s.focus)
@@ -19,6 +21,8 @@ export default function WindowFrame({ win }: { win: Win }) {
       case 'explorer': return <Explorer winId={win.id} />
       case 'terminal': return <Terminal winId={win.id} />
       case 'readme': return <ReadmeViewer />
+      case 'claritymail': return <ClarityMail />
+      case 'strategylens': return <StrategyLens />
     }
   }, [win.app, win.id, win.props])
 

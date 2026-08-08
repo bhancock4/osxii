@@ -32,7 +32,8 @@ interface PopupStore {
   spawnConfirm: () => void
   closePopup: (id: number) => void
   toast: (text: string) => void
-  showBindows: () => void
+  /** No argument: a random OSXii tip. With text: the caller's own wisdom (Chrono™). */
+  showBindows: (tip?: string) => void
   hideBindows: () => void
   showUpdate: () => void
 }
@@ -86,8 +87,8 @@ export const usePopups = create<PopupStore>()((set, get) => ({
     setTimeout(() => set(s => ({ toasts: s.toasts.filter(t => t.id !== id) })), 5000)
   },
 
-  showBindows: () => {
-    const tip = BINDOWS_TIPS[Math.floor(Math.random() * BINDOWS_TIPS.length)]
+  showBindows: custom => {
+    const tip = custom ?? BINDOWS_TIPS[Math.floor(Math.random() * BINDOWS_TIPS.length)]
     set({ bindowsTip: tip })
     if (bindowsTimer) clearTimeout(bindowsTimer)
     bindowsTimer = setTimeout(() => set({ bindowsTip: null }), 14000)

@@ -472,3 +472,280 @@ body { font-size: 12px; }
 @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes glitchflash { 0% { filter: invert(1); } 100% { filter: invert(0); } }
+
+/* ==================== StrategyLens® Time Entry module ==================== */
+/* The app inside the window is a 2010s enterprise SaaS: slate chrome, white
+   grid, professional dread. The clash with the Win95 shell is the point. */
+
+.glyph-sl { color: #dfe9f2; font-weight: 900; }
+
+.sl-app {
+  flex: 1; min-height: 0; display: flex; flex-direction: column;
+  background: #f4f6f8; font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 12px; color: #24313f; border: 1px solid #9aa7b4;
+}
+
+/* -- loading splash -- */
+.sl-loading { align-items: center; justify-content: center; gap: 14px; background: #2d3e50; color: #fff; }
+.sl-load-logo { font-size: 26px; font-weight: 300; letter-spacing: 1px; }
+.sl-load-bar { width: 240px; height: 8px; background: #1b2836; border-radius: 4px; overflow: hidden; }
+.sl-load-bar-fill {
+  height: 100%; width: 40%; background: #5aa2d8; border-radius: 4px;
+  animation: slload 1.6s ease-in-out infinite;
+}
+@keyframes slload { 0% { margin-left: -40%; } 100% { margin-left: 100%; } }
+.sl-load-line { color: #b8cbde; font-style: italic; }
+.sl-load-small { color: #6d8299; font-size: 10px; }
+
+/* -- toolbar -- */
+.sl-toolbar {
+  display: flex; align-items: center; gap: 12px; padding: 6px 10px;
+  background: #2d3e50; color: #fff; flex: none;
+}
+.sl-logo { font-weight: 300; font-size: 14px; letter-spacing: 0.5px; }
+.sl-crumb { color: #b8cbde; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.sl-week-nav { display: flex; gap: 6px; align-items: center; white-space: nowrap; }
+.sl-week-nav button { min-width: 0; padding: 1px 7px; }
+.sl-gone { visibility: hidden; }
+
+/* -- validation banner -- */
+.sl-valerror {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  background: #fdecea; color: #8f1f17; border-bottom: 2px solid #d93025;
+  padding: 7px 10px; font-weight: 600; flex: none;
+}
+.sl-valerror button { min-width: 0; padding: 1px 8px; flex: none; }
+
+/* -- the grid -- */
+.sl-grid-wrap { flex: 1; min-height: 0; overflow: auto; background: #fff; }
+.sl-grid { border-collapse: collapse; width: 100%; }
+.sl-grid th {
+  position: sticky; top: 0; background: #e9eef2; color: #46596b;
+  border: 1px solid #cfd8e0; padding: 4px 6px; font-weight: 600; font-size: 11px;
+  text-align: center; z-index: 2;
+}
+.sl-grid td { border: 1px solid #e3e9ee; padding: 2px 4px; text-align: center; }
+.sl-grid tfoot td { background: #eef2f5; font-weight: 700; border-top: 2px solid #cfd8e0; }
+.sl-group-row td {
+  background: #dde6ee; text-align: left; font-weight: 700; color: #33475b;
+  padding: 4px 8px; border: 1px solid #cfd8e0;
+}
+.sl-work-col { text-align: left !important; min-width: 240px; max-width: 300px; font-size: 11px; }
+.sl-item-pin { margin-right: 5px; }
+.sl-weekend { background: #f3f4f6; color: #a5adb5; }
+.sl-cell {
+  width: 44px; padding: 3px 2px; text-align: center;
+  border: 1px solid #c6d0da; background: #fff; font: inherit;
+}
+.sl-cell:focus { outline: 2px solid #5aa2d8; }
+.sl-cell:disabled { background: #f3f4f6; border-color: #e3e9ee; }
+.sl-cell-pending { color: #8899aa; font-style: italic; background: #f5f9fc; }
+.sl-cell-gone { display: inline-block; width: 44px; }
+.sl-num { font-variant-numeric: tabular-nums; }
+.sl-remaining { color: #6d8299; }
+.sl-over { color: #d93025; font-weight: 700; }
+.sl-week-total { color: #d97706; }
+.sl-week-total.sl-forty { color: #0a7d0a; }
+
+.sl-grid-gone {
+  flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center;
+  background: repeating-linear-gradient(45deg, #f7f9fa 0 14px, #eef2f5 14px 28px);
+}
+.sl-grid-gone-msg { color: #7a8ea1; font-style: italic; text-align: center; line-height: 1.7; }
+
+/* -- footer -- */
+.sl-footer {
+  display: flex; align-items: center; gap: 12px; padding: 7px 10px;
+  background: #e9eef2; border-top: 1px solid #cfd8e0; flex: none;
+}
+.sl-footer button { font-family: inherit; }
+.sl-selectwork { padding: 5px 12px; }
+.sl-autosave { flex: 1; text-align: center; color: #5b6b7a; font-style: italic; }
+.sl-autosave-doubt { color: #d93025; font-weight: 700; }
+.sl-primary {
+  background: #2f6db4; color: #fff; border: 1px solid #24578f;
+  box-shadow: none; padding: 6px 16px; font-weight: 600; cursor: pointer;
+}
+.sl-primary:hover { background: #3a7cc7; }
+.sl-primary:disabled { background: #9db4cb; border-color: #8aa0b6; }
+.sl-gone-btn { display: inline-block; width: 90px; }
+
+/* -- Select Work -- */
+.sl-modal {
+  position: absolute; inset: 0; z-index: 90;
+  background: rgba(20, 33, 46, 0.45);
+  display: flex; align-items: center; justify-content: center;
+}
+.sl-modal-box {
+  width: 92%; max-width: 560px; max-height: 92%; display: flex; flex-direction: column;
+  background: #fff; border: 1px solid #9aa7b4; box-shadow: 0 8px 24px rgba(0,0,0,.35);
+}
+.sl-modal-title {
+  background: #2d3e50; color: #fff; padding: 7px 12px; font-weight: 600; font-size: 12px;
+}
+.sl-search-row { display: flex; gap: 6px; padding: 8px 10px 0; }
+.sl-search { flex: 1; padding: 4px 8px; border: 1px solid #c6d0da; font: inherit; }
+.sl-search-msg { padding: 6px 12px 0; color: #8f1f17; font-style: italic; }
+.sl-tree { flex: 1; min-height: 160px; overflow-y: auto; padding: 8px 6px; }
+.sl-tree-branch {
+  display: block; width: 100%; text-align: left; background: none; border: none;
+  box-shadow: none; min-width: 0; font: inherit; font-weight: 600; color: #33475b;
+  padding: 3px 4px; cursor: pointer;
+}
+.sl-tree-branch:hover { background: #eef4fa; }
+.sl-tree-caret { display: inline-block; width: 12px; color: #7a8ea1; }
+.sl-tree-leaf {
+  display: flex; gap: 7px; align-items: center; padding: 3px 4px; cursor: pointer;
+  font-size: 11px;
+}
+.sl-tree-leaf:hover { background: #eef4fa; }
+.sl-tree-disabled { color: #a5adb5; cursor: not-allowed; }
+/* 98.css hides native checkboxes (input+label sibling pattern). StrategyLens
+   is a "modern" web app trapped in a retro OS — give it real checkboxes. */
+.sl-tree-leaf input[type='checkbox'],
+.sl-attest-check input[type='checkbox'] {
+  appearance: auto; -webkit-appearance: auto; -moz-appearance: auto;
+  opacity: 1; position: static; width: 13px; height: 13px; margin: 0; flex: none;
+}
+.sl-tree-empty { color: #a5adb5; font-style: italic; padding: 2px 4px; font-size: 11px; }
+.sl-modal-actions {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+  border-top: 1px solid #e3e9ee; background: #f4f6f8;
+}
+.sl-modal-hint { flex: 1; color: #7a8ea1; font-size: 10px; font-style: italic; }
+
+/* -- ClarityMail -- */
+.mail-app {
+  flex: 1; min-height: 0; display: flex; background: #fff;
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-size: 12px;
+  border: 1px solid #9aa7b4; color: #24313f;
+}
+.mail-folders {
+  width: 130px; flex: none; background: #eef2f5; border-right: 1px solid #cfd8e0;
+  display: flex; flex-direction: column; padding: 6px 4px; gap: 2px;
+}
+.mail-folder {
+  text-align: left; background: none; border: none; box-shadow: none; min-width: 0;
+  padding: 5px 8px; font: inherit; cursor: pointer;
+}
+.mail-folder:hover { background: #dde6ee; }
+.mail-folder.active { background: #cfe0f0; font-weight: 600; }
+.mail-quota { margin-top: auto; padding: 6px 8px; color: #8f1f17; font-size: 10px; }
+.mail-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.mail-list {
+  flex: none; max-height: 45%; overflow-y: auto; border-bottom: 2px solid #cfd8e0;
+  display: flex; flex-direction: column;
+}
+.mail-row {
+  display: flex; gap: 8px; align-items: baseline; padding: 5px 8px;
+  background: none; border: none; border-bottom: 1px solid #eef2f5;
+  box-shadow: none; min-width: 0; font: inherit; text-align: left; cursor: pointer;
+}
+.mail-row:hover { background: #f2f7fc; }
+.mail-row.selected { background: #cfe0f0; }
+.mail-row.unread { font-weight: 700; }
+.mail-from { flex: none; width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mail-subj { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mail-time { flex: none; color: #7a8ea1; font-size: 10px; font-weight: 400; }
+.mail-read { flex: 1; min-height: 0; overflow-y: auto; padding: 10px 14px; }
+.mail-head { border-bottom: 1px solid #e3e9ee; padding-bottom: 8px; margin-bottom: 8px; }
+.mail-meta { color: #5b6b7a; font-size: 11px; margin-top: 2px; }
+.mail-body {
+  font-family: inherit; font-size: 12px; white-space: pre-wrap; line-height: 1.5;
+  margin: 0; user-select: text;
+}
+.mail-empty { flex: 1; display: flex; align-items: center; justify-content: center; color: #7a8ea1; font-style: italic; padding: 20px; }
+
+/* -- MessengerLens chat dock -- */
+.chat-dock {
+  position: fixed; right: 8px; bottom: 40px; z-index: 25000;
+  display: flex; align-items: flex-end; gap: 8px;
+}
+.chat-window {
+  width: 230px; background: #fff; border: 1px solid #6d8299;
+  box-shadow: 0 4px 14px rgba(0,0,0,.3); display: flex; flex-direction: column;
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-size: 11px;
+}
+.chat-min {
+  background: #2d3e50; color: #fff; border: 1px solid #1b2836; box-shadow: none;
+  min-width: 0; padding: 5px 10px; font-size: 11px; cursor: pointer;
+}
+.chat-title {
+  display: flex; justify-content: space-between; align-items: center; gap: 4px;
+  background: #2d3e50; color: #fff; padding: 4px 6px; font-weight: 600;
+}
+.chat-title-btns { display: flex; gap: 2px; }
+.chat-title-btns button {
+  min-width: 0; width: 18px; height: 16px; padding: 0; font-size: 9px; line-height: 1;
+}
+.chat-sub { background: #eef2f5; color: #7a8ea1; padding: 2px 6px; font-size: 9px; border-bottom: 1px solid #e3e9ee; }
+.chat-log { padding: 6px; max-height: 120px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+.chat-them b { color: #24578f; }
+.chat-me { text-align: right; }
+.chat-me b { color: #4a5e72; }
+.chat-sys { color: #a5adb5; font-style: italic; font-size: 10px; text-align: center; }
+.chat-typing { animation: blink 1.4s steps(2) infinite; }
+.chat-input-row { display: flex; gap: 4px; padding: 5px; border-top: 1px solid #e3e9ee; }
+.chat-input { flex: 1; min-width: 0; padding: 3px 6px; border: 1px solid #c6d0da; font: inherit; }
+.chat-input-row button { min-width: 0; padding: 2px 8px; }
+
+/* -- SL overlays -- */
+.sl-overlay {
+  position: fixed; inset: 0; z-index: 27000;
+  background: rgba(0,0,0,.45);
+  display: flex; align-items: center; justify-content: center;
+}
+.sl-overlay-red { background: rgba(120, 0, 0, .5); z-index: 27500; }
+.sl-bigmail { width: 620px; max-width: 94vw; max-height: 88vh; display: flex; flex-direction: column; }
+.sl-bigmail-body { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+.sl-bigmail-head { border-bottom: 1px solid #999; padding: 4px 6px 8px; font-size: 12px; }
+.sl-bigmail-text {
+  flex: 1; min-height: 0; overflow-y: auto; margin: 8px 0;
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-size: 13px;
+  white-space: pre-wrap; line-height: 1.5; padding: 2px 6px;
+}
+.sl-bigmail-actions { display: flex; justify-content: center; padding: 6px 0 4px; }
+.sl-bigmail-actions .sl-primary { min-width: 130px; }
+.sl-receipt { width: 380px; max-width: 90vw; }
+
+.sl-compliance { width: 470px; max-width: 92vw; animation: shake 0.5s 2; }
+.sl-compliance-bar { background: linear-gradient(90deg, #7a0000, #b00000) !important; }
+.sl-compliance-text {
+  font-family: inherit; white-space: pre-wrap; line-height: 1.55; margin: 6px 4px;
+  font-size: 13px;
+}
+.sl-compliance-btn { min-width: 200px; font-weight: 700; }
+
+.sl-serenity { background: #1d5c46; z-index: 47500; }
+
+.sl-attest { width: 480px; max-width: 92vw; }
+.sl-attest-body { display: flex; flex-direction: column; gap: 10px; padding: 8px; }
+.sl-attest-legal {
+  background: #fff; border: 2px inset #fff; padding: 8px 10px;
+  font-size: 10px; line-height: 1.5; text-align: left; max-height: 130px; overflow-y: auto;
+}
+.sl-attest-check { display: flex; gap: 8px; align-items: center; text-align: left; }
+.sl-attest-mgr { display: flex; flex-direction: column; gap: 4px; text-align: left; }
+.sl-attest-mgr select { padding: 3px; font: inherit; }
+.sl-attest-actions { display: flex; justify-content: space-between; gap: 10px; }
+
+/* -- onboarding & endings -- */
+.sl-onboard { display: flex; flex-direction: column; gap: 8px; }
+.sl-onboard-label { text-align: left; }
+.sl-clockin { flex: 1; }
+.select-back {
+  align-self: flex-start; background: none; border: none; box-shadow: none;
+  min-width: 0; text-decoration: underline; color: #29517a; cursor: pointer; padding: 2px;
+}
+
+.shame-screen { background: linear-gradient(135deg, #3c1414, #1a0808); overflow-y: auto; }
+.shame-card { width: 560px; max-width: 94vw; margin: 16px 0; }
+.shame-bar { background: linear-gradient(90deg, #7a0000, #b00000) !important; }
+.shame-body { padding: 12px 14px; text-align: left; max-height: 84vh; overflow-y: auto; }
+.shame-head { border-bottom: 1px solid #999; padding-bottom: 8px; margin-bottom: 6px; font-size: 12px; }
+.shame-cc { color: #7a0000; }
+.shame-text { font-family: inherit; white-space: pre-wrap; line-height: 1.5; font-size: 12px; margin: 8px 0; }
+.shame-table { border-collapse: collapse; margin: 6px auto; font-size: 12px; }
+.shame-table th, .shame-table td { border: 1px solid #999; padding: 3px 16px; text-align: left; }
+.shame-table th { background: #eee; }
+.shame-me { background: #ffd6d6; font-weight: 700; }

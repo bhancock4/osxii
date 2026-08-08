@@ -3,7 +3,7 @@ import { DIFFICULTIES, type Difficulty } from '../chaos/difficulty'
 import {
   leaderboardEnabled, savedName, rememberName, sanitizeName,
   submitScore, fetchTop, fetchRank, computeMovement,
-  type Ending, type ScoreEntry, type Movement,
+  type Ending, type ScoreEntry, type Movement, type BoardDifficulty,
 } from './client'
 
 function fmtTime(seconds: number): string {
@@ -12,7 +12,8 @@ function fmtTime(seconds: number): string {
 
 const EDITION_SHORT: Record<Difficulty, string> = { home: 'Home', pro: 'Pro', enterprise: 'Ent' }
 
-function EditionCell({ d }: { d: Difficulty }) {
+function EditionCell({ d }: { d: BoardDifficulty }) {
+  if (d === 'eom') return <span title="StrategyLens® Time Entry — End-of-Month Cutoff">🗓️ EOM</span>
   return (
     <span title={DIFFICULTIES[d].label}>
       {DIFFICULTIES[d].icon} {EDITION_SHORT[d]}
@@ -51,7 +52,7 @@ export function BoardTable({
             <td>{i + 1}</td>
             <td className="lb-move-cell"><MovementChip m={movement[row.id!]} /></td>
             <td>{row.name}</td>
-            <td><EditionCell d={row.difficulty as Difficulty} /></td>
+            <td><EditionCell d={row.difficulty} /></td>
             {ending === 'ultrawon'
               ? <td>{fmtTime(row.seconds)}</td>
               : <><td>{row.score.toLocaleString()}</td><td>{fmtTime(row.seconds)}</td></>}
@@ -82,8 +83,8 @@ function useBoard(ending: Ending, limit: number) {
  * Post-game leaderboard: submit a name (optional — glory is opt-in), then see
  * the combined board with your row highlighted.
  */
-export default function Leaderboard({ entry }: { entry: Omit<ScoreEntry, 'name'> }) {
-  const [name, setName] = useState(savedName())
+export default function Leaderboard({ entry, presetName }: { entry: Omit<ScoreEntry, 'name'>; presetName?: string }) {
+  const [name, setName] = useState(() => sanitizeName(presetName ?? '') || savedName())
   const [phase, setPhase] = useState<'form' | 'submitting' | 'done' | 'error'>('form')
   const [rank, setRank] = useState<number | null>(null)
   const [myId, setMyId] = useState<number | null>(null)
@@ -110,7 +111,7 @@ export default function Leaderboard({ entry }: { entry: Omit<ScoreEntry, 'name'>
   return (
     <div className="leaderboard">
       <div className="lb-title">
-        🌐 Global Hall of {entry.ending === 'ultrawon' ? 'Liberation' : 'Suffering'}
+        🌐 Global Hall of {entry.ending === 'ultrawon' ? 'Liberation' : entry.ending === 'timesheet' ? 'Compliance' : 'Suffering'}
       </div>
 
       {phase === 'form' && (
@@ -151,6 +152,7 @@ export default function Leaderboard({ entry }: { entry: Omit<ScoreEntry, 'name'>
 export function LeaderboardPanel() {
   const wins = useBoard('won', 8)
   const liberation = useBoard('ultrawon', 5)
+  const compliance = useBoard('timesheet', 5)
 
   if (!leaderboardEnabled()) return null
 
@@ -164,6 +166,12 @@ export function LeaderboardPanel() {
         {wins.failed && <p className="lb-note">Unavailable. Imagine greatness.</p>}
         {!wins.rows && !wins.failed && <p className="lb-note">Consulting the cloud…</p>}
         {wins.rows && <BoardTable ending="won" rows={wins.rows} movement={wins.movement} />}
+
+        <div className="lb-title lb-title-gap">🗓️ Hall of Compliance</div>
+        <p className="lb-note lb-hint">Timesheets submitted before 5:00 PM. Their sacrifice is billable.</p>
+        {compliance.failed && <p className="lb-note">Unavailable.</p>}
+        {!compliance.rows && !compliance.failed && <p className="lb-note">Consulting the cloud…</p>}
+        {compliance.rows && <BoardTable ending="timesheet" rows={compliance.rows} movement={compliance.movement} />}
 
         <div className="lb-title lb-title-gap">🕊️ Hall of Liberation</div>
         <p className="lb-note lb-hint">Achieved by those who found… another way out.</p>

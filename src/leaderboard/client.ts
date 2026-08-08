@@ -36,12 +36,20 @@ function db(): Promise<SupabaseClient> {
   return clientPromise
 }
 
-export type Ending = 'won' | 'ultrawon'
+/**
+ * Boards: 'won'/'ultrawon' are the classic module; 'timesheet' is a
+ * StrategyLens victory; 'shamed' is a StrategyLens miss — the cross-player
+ * wall of shame the loss email cc's the world on.
+ */
+export type Ending = 'won' | 'ultrawon' | 'timesheet' | 'shamed'
+
+/** StrategyLens runs report the 'eom' edition (End of Month). */
+export type BoardDifficulty = Difficulty | 'eom'
 
 export interface ScoreEntry {
   id?: number
   name: string
-  difficulty: Difficulty
+  difficulty: BoardDifficulty
   ending: Ending
   score: number
   seconds: number
@@ -105,16 +113,19 @@ export async function submitScore(entry: ScoreEntry): Promise<{ id: number }> {
 /**
  * Top entries for a board, all editions combined (each row carries its
  * difficulty). Normal wins rank by score (desc); Total System Liberation
- * ranks by speed (asc) because the score is always ∞.
+ * ranks by speed (asc) because the score is always ∞. The wall of shame
+ * ranks by recency — fresh shame first.
  */
-export async function fetchTop(ending: Ending, limit = 10, difficulty?: Difficulty): Promise<ScoreEntry[]> {
+export async function fetchTop(ending: Ending, limit = 10, difficulty?: BoardDifficulty): Promise<ScoreEntry[]> {
   let q = (await db())
     .from('scores')
     .select('id, name, difficulty, ending, score, seconds, balance, subs, ads_closed')
     .eq('ending', ending)
     .limit(limit)
   if (difficulty) q = q.eq('difficulty', difficulty)
-  q = ending === 'ultrawon' ? q.order('seconds', { ascending: true }) : q.order('score', { ascending: false })
+  q = ending === 'ultrawon' ? q.order('seconds', { ascending: true })
+    : ending === 'shamed' ? q.order('created_at', { ascending: false })
+    : q.order('score', { ascending: false })
   const { data, error } = await q
   if (error) throw error
   return (data ?? []) as ScoreEntry[]

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useGame } from '../state/game'
-import { DIFFICULTIES } from '../chaos/difficulty'
+import { DIFFICULTIES, SL } from '../chaos/difficulty'
 import { useWins } from '../state/windows'
 import { usePopups } from '../state/popups'
+import { useTimesheet, fmtClock } from '../state/timesheet'
 import { chance } from '../chaos/engine'
 
 function useClock() {
@@ -23,10 +24,31 @@ function useClock() {
   return time
 }
 
+function SLTray() {
+  const clockMin = useTimesheet(s => s.clockMin)
+  const submitted = useTimesheet(s => s.submitted)
+  const left = SL.deadlineMin - clockMin
+  const urgent = left <= 60 && !submitted
+  return (
+    <div className="tray">
+      <span title="Time remaining until the cutoff. It only goes down.">
+        ⏳ {left > 0 ? `${Math.floor(left / 60)}h ${String(left % 60).padStart(2, '0')}m` : '0h 00m'} to cutoff
+      </span>
+      <span
+        className={urgent ? 'calendar calendar-warn' : 'calendar'}
+        title="The corporate clock. It is faster than yours."
+      >
+        🕐 {fmtClock(clockMin)}
+      </span>
+    </div>
+  )
+}
+
 export default function Taskbar() {
   const wins = useWins(s => s.wins)
   const focus = useWins(s => s.focus)
   const topZ = useWins(s => Math.max(0, ...s.wins.filter(w => !w.minimized).map(w => w.z)))
+  const module = useGame(s => s.module)
   const balance = useGame(s => s.balance)
   const subs = useGame(s => s.subscriptions)
   const day = useGame(s => s.day)
@@ -38,6 +60,10 @@ export default function Taskbar() {
   const renewalSoon = subs.length > 0 && monthDays - day <= 6
 
   const onStart = () => {
+    if (module === 'strategylens') {
+      usePopups.getState().toast('The Start menu has been disabled by your administrator, for focus.')
+      return
+    }
     usePopups.getState().toast('The Start menu is coming in OSXiii. Subscribe for early access!')
     usePopups.getState().spawnAd()
   }
@@ -57,23 +83,25 @@ export default function Taskbar() {
           {w.title}
         </button>
       ))}
-      <div className="tray">
-        <span title="Active subscriptions">💳 ×{subs.length}</span>
-        <span
-          className={renewalSoon ? 'calendar calendar-warn' : 'calendar'}
-          title={
-            subs.length > 0
-              ? `Subscriptions renew on Day 1: -$${subTotal.toFixed(2)} (OSXii Time Compression™)`
-              : 'Subscriptions renew on Day 1 of each month. You have none. Keep it that way.'
-          }
-        >
-          📅 Day {day}/{monthDays}
-        </span>
-        <span className={balance < 40 ? 'balance balance-low' : 'balance'}>
-          ${balance.toFixed(2)}
-        </span>
-        <span>{time}</span>
-      </div>
+      {module === 'strategylens' ? <SLTray /> : (
+        <div className="tray">
+          <span title="Active subscriptions">💳 ×{subs.length}</span>
+          <span
+            className={renewalSoon ? 'calendar calendar-warn' : 'calendar'}
+            title={
+              subs.length > 0
+                ? `Subscriptions renew on Day 1: -$${subTotal.toFixed(2)} (OSXii Time Compression™)`
+                : 'Subscriptions renew on Day 1 of each month. You have none. Keep it that way.'
+            }
+          >
+            📅 Day {day}/{monthDays}
+          </span>
+          <span className={balance < 40 ? 'balance balance-low' : 'balance'}>
+            ${balance.toFixed(2)}
+          </span>
+          <span>{time}</span>
+        </div>
+      )}
     </div>
   )
 }

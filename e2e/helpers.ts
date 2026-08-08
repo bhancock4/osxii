@@ -27,10 +27,11 @@ export async function armAutoClicker(page: Page): Promise<void> {
   })
 }
 
-/** Boot → edition select → desktop, with the auto-clicker armed and README closed. */
+/** Boot → module picker → edition select → desktop, with the auto-clicker armed and README closed. */
 export async function startGame(page: Page, edition: 'Home' | 'Professional' | 'Enterprise'): Promise<void> {
   await page.goto('/')
   await page.waitForSelector('.select-card', { timeout: 20_000 })
+  await page.click('.select-option:has-text("OSXii Setup")')
   await page.click(`.select-option:has-text("${edition}")`)
   await page.waitForSelector('.taskbar', { timeout: 5_000 })
   await armAutoClicker(page)

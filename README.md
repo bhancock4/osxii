@@ -49,6 +49,34 @@ Experience™, Enhanced Cursor Physics™). And the in-game `READ ME FIRST.txt`
 documents everything — including a full command-prompt speedrun path, and one
 command you must absolutely never run.
 
+## The other game: StrategyLens® Time Entry
+
+Part of the ClarityOne™ Suite. It is end-of-month Friday. You have from
+6:00 AM to 5:00 PM (one real minute per corporate hour) to submit exactly
+40.00 hours of timesheet through StrategyLens, an enterprise time entry system
+that sincerely believes it is helping.
+
+Your guidance arrives by email, refers to every project by nickname, and
+contradicts itself about what Administrative Time is for (twice, then a third
+time, conclusively, pending revision). Some projects are on your timecard;
+the rest are hidden in Select Work, a ragged hierarchy of org units, cost
+centers, and WBS elements where the correct Phoenix line sits directly next to
+two incorrect Phoenix lines, one of which notifies your manager and the CIO the
+moment you touch it. So does exceeding a line's remaining hours. The grid is
+slow, the validator rejects legal numbers on principle, buttons and columns
+occasionally stop existing for 5–10 seconds, and giant emails demand read
+receipts ([Send] or [Send]) while colleagues IM you "hey" and nothing else,
+ever.
+
+At some point a vague dialog offers a scheduled activity. Answer carefully, or
+at 4:15 PM your endpoint achieves Serenity™ until precisely ten seconds before
+the cutoff — which, we are told, is plenty of time.
+
+Win, and your hours are forwarded to Finance and the Global Hall of Compliance.
+Miss the cutoff, and the non-compliance email goes out — you, your manager, the
+Chief Information Officer, and God are all on it, along with a live wall of
+shame of real players who also didn't submit. Their sacrifice was not billable.
+
 ## Run it
 
 ```sh
