@@ -1,9 +1,11 @@
 import { create } from 'zustand'
 import { SL } from '../chaos/difficulty'
 import {
-  SL_ITEM_BY_ID, REQUIRED_PROJECT_IDS, BUCKET_IDS, VAL_MSG,
-  COMPLIANCE_TRIPWIRE, COMPLIANCE_OVERBOOK,
+  SL_ITEM_BY_ID, SL_EMAILS, REQUIRED_PROJECT_IDS, BUCKET_IDS, VAL_MSG,
+  COMPLIANCE_TRIPWIRE, COMPLIANCE_OVERBOOK, type SLEmail,
 } from '../content/strategylens'
+
+const SL_EMAIL_BY_ID: Record<string, SLEmail> = Object.fromEntries(SL_EMAILS.map(e => [e.id, e]))
 import { useGame } from './game'
 
 /**
@@ -261,10 +263,20 @@ export const useTimesheet = create<TSState>()((set, get) => ({
     })
   },
 
-  markRead: id => set(s => (s.read[id] ? {} : {
-    read: { ...s.read, [id]: true },
-    stats: { ...s.stats, emailsRead: s.stats.emailsRead + 1 },
-  })),
+  markRead: id => set(s => {
+    if (s.read[id]) return {}
+    // The reading pane says "a read receipt was sent on your behalf" — it was.
+    // The sender now knows. (Doesn't count toward receiptsSent: you didn't
+    // click Send, ClarityMail volunteered you.)
+    const demandsReceipt = SL_EMAIL_BY_ID[id]?.receipt
+    return {
+      read: { ...s.read, [id]: true },
+      receiptsFrom: demandsReceipt && !s.receiptsFrom.includes(id)
+        ? [...s.receiptsFrom, id]
+        : s.receiptsFrom,
+      stats: { ...s.stats, emailsRead: s.stats.emailsRead + 1 },
+    }
+  }),
 
   dismissInterrupt: () => set(s => ({
     interrupt: null,

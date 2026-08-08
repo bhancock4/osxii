@@ -741,16 +741,21 @@ export const SL_ERRORS: ErrorSpec[] = [
   },
 ]
 
-export const SL_TOASTS = [
-  '☁️ StrategyLens synced your timesheet to the cloud (the cloud has questions).',
+/** Ambient corporate-machine noise: fires whether or not StrategyLens is open. */
+export const SL_TOASTS_AMBIENT = [
   '📊 Your utilization is being discussed.',
   '🧾 Reminder: unsubmitted time is legally a rumor.',
-  '✨ The grid has been recalculated. No cells were harmed. Probably.',
   '📅 Finance has entered the chat. Finance has left the chat. Finance saw everything.',
-  '🔄 Background sync complete: 0 items synced, 3 items judged.',
   '🏢 This workstation is managed by ClarityOne Endpoint Serenity™.',
-  '📈 Your burn-down chart is burning up. Someone has been notified.',
   '🕐 The deadline remains 5:00 PM. The deadline has always been 5:00 PM.',
+]
+
+/** Spoken by StrategyLens itself: only while the app is actually running. */
+export const SL_TOASTS_APP = [
+  '☁️ StrategyLens synced your timesheet to the cloud (the cloud has questions).',
+  '✨ The grid has been recalculated. No cells were harmed. Probably.',
+  '🔄 Background sync complete: 0 items synced, 3 items judged.',
+  '📈 Your burn-down chart is burning up. Someone has been notified.',
   '💼 A stakeholder has viewed your timecard and said "hm."',
 ]
 

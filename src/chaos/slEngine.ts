@@ -1,11 +1,12 @@
 import { useGame } from '../state/game'
+import { useWins } from '../state/windows'
 import { usePopups } from '../state/popups'
 import { useTimesheet, pickPreloaded, type UiPart } from '../state/timesheet'
 import { SL } from './difficulty'
 import { trackInput } from './engine'
 import {
   START_EMAIL_IDS, INTERRUPT_EMAIL_IDS, SL_EMAILS,
-  SL_TOASTS, SL_ERRORS, CHAT_SENDERS, CHAT_SALUTATIONS, CHAT_NVM, CHAT_NAGS, CHRONO_TIPS,
+  SL_TOASTS_AMBIENT, SL_TOASTS_APP, SL_ERRORS, CHAT_SENDERS, CHAT_SALUTATIONS, CHAT_NVM, CHAT_NAGS, CHRONO_TIPS,
   fill,
 } from '../content/strategylens'
 
@@ -26,6 +27,21 @@ function playing(): boolean {
 function stageBusy(): boolean {
   const t = useTimesheet.getState()
   return t.interrupt !== null || t.compliance !== null || t.updateRunning || t.updateOfferVisible
+}
+
+/**
+ * StrategyLens-sourced nuisances (its errors, Chrono's hints, vanishing UI,
+ * server-value reverts) only fire while the app is actually open — software
+ * cannot disappoint you before you run it. Minimized still counts: it's
+ * running, it knows.
+ */
+function slAppOpen(): boolean {
+  return useWins.getState().wins.some(w => w.app === 'strategylens')
+}
+
+/** Giant email popups (and receipt demands) require ClarityMail to be running. */
+function mailOpen(): boolean {
+  return useWins.getState().wins.some(w => w.app === 'claritymail')
 }
 
 // ---- Clock & the day's fixed appointments ----
@@ -92,7 +108,15 @@ function fireEmail() {
   const pool = [...fresh, ...nags]
   const id = pool.length > 0 ? randOf(pool) : 'urgent1'
   firedEmails.add(id)
-  t.deliverEmail(id, true)
+  // Popup only when the mail client is running; otherwise the message lands
+  // quietly in the inbox and the tray tattles about it.
+  if (mailOpen()) {
+    t.deliverEmail(id, true)
+  } else {
+    t.deliverEmail(id, false)
+    const email = SL_EMAILS.find(e => e.id === id)!
+    usePopups.getState().toast(`📨 ClarityMail: 1 new message from ${email.from}. It can wait. It says it can't.`)
+  }
 }
 
 function fireChat() {
@@ -142,8 +166,9 @@ export function chatReplied(chatId: number) {
 export function scheduleReceiptReprompt(emailId: string) {
   setTimeout(() => {
     if (!playing()) return
-    if (stageBusy()) {
-      // Someone else is interrupting; the receipt waits its turn, patiently, forever.
+    if (stageBusy() || !mailOpen()) {
+      // Someone else is interrupting, or the client is closed; the receipt
+      // waits its turn, patiently, forever.
       scheduleReceiptReprompt(emailId)
       return
     }
@@ -153,7 +178,7 @@ export function scheduleReceiptReprompt(emailId: string) {
 
 function fireVanish() {
   const t = useTimesheet.getState()
-  if (t.updateRunning) return
+  if (t.updateRunning || !slAppOpen()) return
   const parts: UiPart[] = ['grid', 'submit', 'selectwork', 'total', 'toolbar', 'colFri']
   const part = randOf(parts)
   if (t.hidden[part]) return
@@ -162,22 +187,23 @@ function fireVanish() {
 }
 
 function fireError() {
-  if (stageBusy()) return
+  if (stageBusy() || !slAppOpen()) return
   usePopups.getState().spawnError(randOf(SL_ERRORS))
 }
 
 function fireToast() {
-  usePopups.getState().toast(randOf(SL_TOASTS))
+  const pool = slAppOpen() ? [...SL_TOASTS_AMBIENT, ...SL_TOASTS_APP] : SL_TOASTS_AMBIENT
+  usePopups.getState().toast(randOf(pool))
 }
 
 function fireChrono() {
-  if (stageBusy()) return
+  if (stageBusy() || !slAppOpen()) return
   usePopups.getState().showBindows(randOf(CHRONO_TIPS))
 }
 
 function fireRevert() {
   const t = useTimesheet.getState()
-  if (t.updateRunning || Math.random() >= SL.cellRevertChance) return
+  if (t.updateRunning || !slAppOpen() || Math.random() >= SL.cellRevertChance) return
   const reverted = t.revertRandomCell()
   if (reverted) {
     usePopups.getState().toast(`🔄 ${reverted.code}: cell restored to the server value (0.00). The server was very sure.`)
