@@ -1,9 +1,12 @@
 import { describe, it, expect } from 'vitest'
 import {
-  validateTimesheet, weekTotal, rowTotal, pickPreloaded, emptyWeek, fmtClock,
+  validateTimesheet, weekTotal, rowTotal, pickPreloaded, emptyWeek, fmtClock, useTimesheet,
   type Entries,
 } from './timesheet'
-import { REQUIRED_PROJECT_IDS, BUCKET_IDS, SL_ITEM_BY_ID, VAL_MSG } from '../content/strategylens'
+import {
+  REQUIRED_PROJECT_IDS, BUCKET_IDS, SL_ITEM_BY_ID, VAL_MSG,
+  SL_EMAILS, CHAT_NAGS,
+} from '../content/strategylens'
 
 const ALL_CARD = [...REQUIRED_PROJECT_IDS, ...BUCKET_IDS]
 
@@ -120,6 +123,35 @@ describe('fmtClock', () => {
     expect(fmtClock(12 * 60)).toBe('12:00 PM')
     expect(fmtClock(16 * 60 + 15)).toBe('4:15 PM')
     expect(fmtClock(17 * 60)).toBe('5:00 PM')
+  })
+})
+
+describe('read receipt aftermath', () => {
+  it('sending a receipt records which sender now knows', () => {
+    const t = useTimesheet.getState()
+    t.deliverEmail('urgent1', true)
+    useTimesheet.getState().demandReceipt()
+    useTimesheet.getState().sendReceipt()
+    const s = useTimesheet.getState()
+    expect(s.receiptsFrom).toContain('urgent1')
+    expect(s.stats.receiptsSent).toBe(1)
+    expect(s.interrupt).toBeNull()
+  })
+
+  it('every nag email follows up on a real email that demanded a receipt', () => {
+    for (const nag of SL_EMAILS.filter(e => e.nagOf)) {
+      const original = SL_EMAILS.find(e => e.id === nag.nagOf)
+      expect(original, `${nag.id} nags a ghost`).toBeDefined()
+      expect(original!.receipt, `${nag.nagOf} never demanded a receipt — its sender cannot know`).toBe(true)
+    }
+  })
+
+  it('every chat nag persona is summoned by a receipt-demanding email', () => {
+    for (const key of Object.keys(CHAT_NAGS)) {
+      const original = SL_EMAILS.find(e => e.id === key)
+      expect(original, `chat nag key ${key} has no email`).toBeDefined()
+      expect(original!.receipt, `${key} never demanded a receipt`).toBe(true)
+    }
   })
 })
 

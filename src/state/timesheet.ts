@@ -27,7 +27,8 @@ export interface SLChat {
   senderTitle: string
   /** The entire message. A salutation. Nothing follows. */
   text: string
-  state: 'pinged' | 'replied' | 'away' | 'nvm'
+  /** 'ooo': replied to, then immediately Out of Office for a month (Brad). */
+  state: 'pinged' | 'replied' | 'away' | 'nvm' | 'ooo'
   playerReply?: string
 }
 
@@ -135,6 +136,8 @@ interface TSState {
   inbox: { id: string; atMin: number }[]
   read: Record<string, boolean>
   interrupt: SLInterrupt | null
+  /** Emails whose read receipt was sent. Their senders now know. */
+  receiptsFrom: string[]
   compliance: { title: string; body: string } | null
   updateOfferVisible: boolean
   updateDeferred: boolean
@@ -190,6 +193,7 @@ export const useTimesheet = create<TSState>()((set, get) => ({
   inbox: [],
   read: {},
   interrupt: null,
+  receiptsFrom: [],
   compliance: null,
   updateOfferVisible: false,
   updateDeferred: false,
@@ -269,14 +273,20 @@ export const useTimesheet = create<TSState>()((set, get) => ({
 
   demandReceipt: () => set(s => (s.interrupt ? { interrupt: { ...s.interrupt, phase: 'receipt' } } : {})),
 
-  sendReceipt: () => set(s => ({
-    interrupt: null,
-    stats: {
-      ...s.stats,
-      receiptsSent: s.stats.receiptsSent + 1,
-      interruptionsClosed: s.stats.interruptionsClosed + 1,
-    },
-  })),
+  sendReceipt: () => set(s => {
+    const emailId = s.interrupt?.emailId
+    return {
+      interrupt: null,
+      receiptsFrom: emailId && !s.receiptsFrom.includes(emailId)
+        ? [...s.receiptsFrom, emailId]
+        : s.receiptsFrom,
+      stats: {
+        ...s.stats,
+        receiptsSent: s.stats.receiptsSent + 1,
+        interruptionsClosed: s.stats.interruptionsClosed + 1,
+      },
+    }
+  }),
 
   notNow: () => set({ interrupt: null }),
 

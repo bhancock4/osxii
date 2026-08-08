@@ -139,7 +139,7 @@ export interface SLConfig {
   /** Fake loading splash duration range (real ms) when the app does launch. */
   loadMs: [number, number]
 
-  /** Gap between UI-vanish events (real ms). */
+  /** Gap between UI-vanish events / grid recalcs (real ms). */
   vanishGapMs: [number, number]
   /** How long a vanished element stays gone (real ms). Spec: 5–10s. */
   vanishDurMs: [number, number]
@@ -166,6 +166,9 @@ export interface SLConfig {
   chatNvmMs: [number, number]
   /** Chance a ghosted sender sends the "nvm got it" coda at all. */
   chatNvmChance: number
+  /** Once read receipts are out: chance a chat ping is a receipt-nag instead
+   * of a fresh salutation. Same cadence — the cast enriches, not the volume. */
+  receiptChatNagChance: number
 
   /** Gap between Chrono™ coaching visits (real ms). */
   chronoGapMs: [number, number]
@@ -196,7 +199,7 @@ export const SL: SLConfig = {
   launchFailChance: 0.3,
   loadMs: [1800, 4200],
 
-  vanishGapMs: [14000, 28000],
+  vanishGapMs: [16500, 32500], // was [14000, 28000]; ~15% fewer grid recalcs
   vanishDurMs: [5000, 10000],
 
   cellLagMs: [200, 900],
@@ -211,6 +214,7 @@ export const SL: SLConfig = {
   chatGapMs: [40000, 80000],
   chatNvmMs: [90000, 180000],
   chatNvmChance: 0.5,
+  receiptChatNagChance: 0.45,
 
   chronoGapMs: [35000, 70000],
   toastGapMs: [20000, 40000],

@@ -211,6 +211,9 @@ export interface SLEmail {
   receipt?: boolean
   /** Present in the inbox at 6:00 AM rather than arriving as an interrupt. */
   atStart?: boolean
+  /** Follow-up nag: only eligible after the player sent a read receipt for
+   * the referenced email. Receipts have consequences. */
+  nagOf?: string
 }
 
 export const SL_EMAILS: SLEmail[] = [
@@ -468,10 +471,75 @@ Please take a Mindful Minute: close your eyes, breathe in for four counts, and r
 Namaste,
 People Success`,
   },
+
+  // ------- Receipt aftermath: senders who KNOW you read it -------
+  {
+    id: 'nag_urgent1',
+    nagOf: 'urgent1',
+    from: 'Timesheet Compliance',
+    fromAddr: 'noreply@strategylens.clarityone',
+    subject: 'RE: URGENT: You read our reminder (we checked) (Read Receipt Requested)',
+    receipt: true,
+    body: `Dear [NAME],
+
+Thank you for your read receipt. Our records now show that you read our reminder and did not submit.
+
+Reading without submitting has been added to your pattern file. The pattern file is going well.
+
+Timesheet Compliance`,
+  },
+  {
+    id: 'nag_permylast',
+    nagOf: 'permylast',
+    from: 'Time Governance Office',
+    fromAddr: 'tgo@clarityone',
+    subject: 'Receipt of your receipt (Read Receipt Requested)',
+    receipt: true,
+    body: `All,
+
+We confirm receipt of your read receipt, which confirmed your receipt of our correction. We have not, however, observed corresponding administrative behavior.
+
+To close the loop, this message also requests a read receipt. There is no bottom to this.
+
+The Time Governance Office`,
+  },
+  {
+    id: 'nag_salmon',
+    nagOf: 'salmon',
+    from: 'Chip Whitley, SVP of Momentum',
+    fromAddr: 'chip.whitley@clarityone',
+    subject: 'RE: What Salmon Taught Me About Q3 — did it land?',
+    body: `Team,
+
+My EA tells me some of you have READ the salmon email — receipts don't lie! — and yet I'm not seeing a single upstream moment logged in StrategyLens.
+
+Reading is not swimming.
+
+I've asked my EA to find out which one of you it was. She already knows. It's in the receipt.
+
+Onward,
+Chip`,
+  },
+  {
+    id: 'nag_password',
+    nagOf: 'password',
+    from: 'Identity & Access Management',
+    fromAddr: 'iam@clarityone',
+    subject: 'RE: Your password expires — you saw this (Read Receipt Requested)',
+    receipt: true,
+    body: `Dear User,
+
+Your read receipt confirms you were warned. The window that does not exist is now smaller.
+
+For security reasons we cannot tell you what to do about this, only that you knew.
+
+Identity & Access Management`,
+  },
 ]
 
 export const START_EMAIL_IDS = SL_EMAILS.filter(e => e.atStart).map(e => e.id)
-export const INTERRUPT_EMAIL_IDS = SL_EMAILS.filter(e => !e.atStart).map(e => e.id)
+export const INTERRUPT_EMAIL_IDS = SL_EMAILS.filter(e => !e.atStart && !e.nagOf).map(e => e.id)
+export const NAG_EMAIL_IDS = SL_EMAILS.filter(e => e.nagOf).map(e => e.id)
 
 // ---------------------------------------------------------------------------
 // Read receipts
@@ -507,6 +575,73 @@ export const CHAT_SALUTATIONS = [
 ]
 
 export const CHAT_NVM = ['nvm got it', 'nvm', 'disregard', 'sorted it, thx anyway']
+
+/**
+ * Receipt-nag chat personas, keyed by the email whose read receipt summons
+ * them. Existing cast members gain receipt-awareness (DeShawn covers IT and
+ * IAM, Tanya covers Learning); Chip and the automated accounts join the
+ * roster. Fired at the normal chat cadence — richer cast, same volume.
+ */
+export interface SLChatNag { senderId: string; name: string; title: string; lines: string[] }
+
+export const CHAT_NAGS: Record<string, SLChatNag> = {
+  urgent1: {
+    senderId: 'compliance-bot',
+    name: 'Timesheet Compliance',
+    title: 'Automated Account — Do Not Reply',
+    lines: [
+      'I know you read that email.',
+      'You read our reminder. And yet.',
+      'This is an automated message. It is also disappointed.',
+    ],
+  },
+  permylast: {
+    senderId: 'tgo-bot',
+    name: 'Time Governance Office',
+    title: 'Doctrine Enforcement (Automated)',
+    lines: [
+      'Your read receipt has been entered into the record.',
+      'You read the correction. Administrate accordingly.',
+    ],
+  },
+  salmon: {
+    senderId: 'chip',
+    name: 'Chip Whitley',
+    title: 'SVP of Momentum',
+    lines: [
+      'hey! saw you read the salmon email 🐟',
+      'did it resonate? be honest',
+      'no pressure on the salmon thing. (there is pressure)',
+    ],
+  },
+  maint: {
+    senderId: 'deshawn',
+    name: 'DeShawn Mills',
+    title: 'IT Service Delivery',
+    lines: [
+      'hey you read the maintenance notice right? receipt says you did',
+      'so whatever happens later, you were informed. just documenting',
+    ],
+  },
+  password: {
+    senderId: 'deshawn',
+    name: 'DeShawn Mills',
+    title: 'IT Service Delivery',
+    lines: [
+      'you read the password email lol. tick tock',
+      'receipt came through on the password thing. so. yeah',
+    ],
+  },
+  training: {
+    senderId: 'tanya',
+    name: 'Tanya Okafor',
+    title: 'People Success Partner',
+    lines: [
+      'saw you read the training reminder! the course misses you 🙂',
+      'i know you read the overdue notice — no judgment! (it is logged though)',
+    ],
+  },
+}
 
 // ---------------------------------------------------------------------------
 // Chrono™, your timesheet coach

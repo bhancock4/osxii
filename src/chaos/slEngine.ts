@@ -5,7 +5,7 @@ import { SL } from './difficulty'
 import { trackInput } from './engine'
 import {
   START_EMAIL_IDS, INTERRUPT_EMAIL_IDS, SL_EMAILS,
-  SL_TOASTS, SL_ERRORS, CHAT_SENDERS, CHAT_SALUTATIONS, CHAT_NVM, CHRONO_TIPS,
+  SL_TOASTS, SL_ERRORS, CHAT_SENDERS, CHAT_SALUTATIONS, CHAT_NVM, CHAT_NAGS, CHRONO_TIPS,
   fill,
 } from '../content/strategylens'
 
@@ -81,11 +81,18 @@ const firedEmails = new Set<string>()
 
 function fireEmail() {
   if (stageBusy()) return
-  // Each email interrupts once; when the well runs dry, Compliance repeats.
+  const t = useTimesheet.getState()
+  // Each email interrupts once. Sending a read receipt makes its sender's
+  // follow-up nag eligible — they KNOW you read it. When the well runs dry,
+  // Compliance repeats.
   const fresh = INTERRUPT_EMAIL_IDS.filter(id => !firedEmails.has(id))
-  const id = fresh.length > 0 ? randOf(fresh) : 'urgent1'
+  const nags = SL_EMAILS
+    .filter(e => e.nagOf && t.receiptsFrom.includes(e.nagOf) && !firedEmails.has(e.id))
+    .map(e => e.id)
+  const pool = [...fresh, ...nags]
+  const id = pool.length > 0 ? randOf(pool) : 'urgent1'
   firedEmails.add(id)
-  useTimesheet.getState().deliverEmail(id, true)
+  t.deliverEmail(id, true)
 }
 
 function fireChat() {
@@ -93,6 +100,16 @@ function fireChat() {
   if (t.updateRunning) return
   // One outstanding un-dealt-with ping per sender, max.
   const activeSenders = new Set(t.chats.filter(c => c.state === 'pinged').map(c => c.senderId))
+
+  // Receipt aftermath: at the SAME cadence, a ping may come from someone who
+  // knows you read their email instead of another bare salutation.
+  const nagKeys = t.receiptsFrom.filter(id => CHAT_NAGS[id] && !activeSenders.has(CHAT_NAGS[id].senderId))
+  if (nagKeys.length > 0 && Math.random() < SL.receiptChatNagChance) {
+    const nag = CHAT_NAGS[randOf(nagKeys)]
+    t.spawnChat(nag.senderId, nag.name, nag.title, fill(randOf(nag.lines), t.playerName))
+    return
+  }
+
   const senders = CHAT_SENDERS.filter(s => !activeSenders.has(s.id))
   if (senders.length === 0) return
   const sender = randOf(senders)
@@ -103,10 +120,20 @@ function fireChat() {
 /** Called by the chat UI when the player takes the bait. */
 export function chatReplied(chatId: number) {
   const t = useTimesheet.getState()
+  const chat = t.chats.find(c => c.id === chatId)
+  // Brad types for a moment, then his out-of-office engages. It was already
+  // written. He pinged you on his way out the door.
+  if (chat?.senderId === 'brad') {
+    setTimeout(() => t.setChatState(chatId, 'ooo'), rand(2500, 5000))
+    return
+  }
   setTimeout(() => t.setChatState(chatId, 'away'), rand(2000, 5000))
-  if (Math.random() < SL.chatNvmChance) {
+  // Only the core cast bothers to say nvm; automated accounts never follow up.
+  const coreCast = CHAT_SENDERS.some(s => s.id === chat?.senderId)
+  if (coreCast && Math.random() < SL.chatNvmChance) {
     setTimeout(() => {
-      if (playing()) useTimesheet.getState().setChatState(chatId, 'nvm')
+      const current = useTimesheet.getState().chats.find(c => c.id === chatId)
+      if (playing() && current?.state === 'away') useTimesheet.getState().setChatState(chatId, 'nvm')
     }, gap(SL.chatNvmMs))
   }
 }

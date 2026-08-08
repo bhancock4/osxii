@@ -13,7 +13,8 @@ function ChatWindow({ chat }: { chat: SLChat }) {
   const [draft, setDraft] = useState('')
   const [minimized, setMinimized] = useState(false)
 
-  const status = chat.state === 'pinged' || chat.state === 'replied' ? '🟢 Online' : '🌙 Away'
+  const status = chat.state === 'pinged' || chat.state === 'replied' ? '🟢 Online'
+    : chat.state === 'ooo' ? '🏖️ Out of Office' : '🌙 Away'
   const nvm = chat.state === 'nvm' ? CHAT_NVM[chat.id % CHAT_NVM.length] : null
 
   const send = () => {
@@ -47,6 +48,12 @@ function ChatWindow({ chat }: { chat: SLChat }) {
         {chat.playerReply && <div className="chat-me"><b>You:</b> {chat.playerReply}</div>}
         {(chat.state === 'away' || chat.state === 'nvm') && (
           <div className="chat-sys">{chat.senderName} is Away and will not be back.</div>
+        )}
+        {chat.state === 'ooo' && (
+          <div className="chat-sys">
+            Automatic reply: {chat.senderName} is Out of Office until the 1st of next month
+            and will have limited access to consequences. The auto-reply was already prepared.
+          </div>
         )}
         {nvm && <div className="chat-them"><b>{chat.senderName.split(' ')[0]}:</b> {nvm}</div>}
         {chat.state === 'replied' && <div className="chat-sys chat-typing">{chat.senderName.split(' ')[0]} is typing…</div>}
